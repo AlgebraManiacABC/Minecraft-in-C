@@ -1,7 +1,0 @@
-{
-	"files.associations": {
-		"stdio.h": "c",
-		"sdl.h": "c"
-	},
-	"cmake.sourceDirectory": "/wsl.localhost/Ubuntu-22.04/home/luke/Documents/Minecraft-in-C"
-}
