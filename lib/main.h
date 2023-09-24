@@ -1,4 +1,10 @@
+//#define VK_USE_PLATFORM_XCB_KHR
+#define VK_USE_PLATFORM_WIN32_KHR
 #include <stdio.h>
 #include <stdlib.h>
-#include <SDL2/SDL.h>
 #include <stdbool.h>
+#include <string.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_vulkan.h>
+#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
