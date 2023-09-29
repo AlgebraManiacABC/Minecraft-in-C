@@ -1,6 +1,9 @@
 # Prerequisites
 *.d
 
+# Test Dirs
+test*
+
 # Build Dirs
 build
 buildNT

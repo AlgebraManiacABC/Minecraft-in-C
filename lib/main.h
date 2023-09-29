@@ -1,10 +1,9 @@
-//#define VK_USE_PLATFORM_XCB_KHR
-#define VK_USE_PLATFORM_WIN32_KHR
+#define GLEW_STATIC
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <math.h>
+#include <GL/glew.h>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_vulkan.h>
-#include <vulkan/vulkan.h>
-#include <vulkan/vulkan_core.h>
+#include <SDL2/SDL_opengl.h>

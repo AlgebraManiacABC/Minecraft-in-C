@@ -2,20 +2,13 @@
 
 int main(int argc, char *argv[])
 {
-	if(!SDL_SetHintWithPriority(SDL_HINT_RENDER_DRIVER, "vulkan", SDL_HINT_OVERRIDE))
-	{
-		SDL_Log("SDL_SetHint failure: %s\n",SDL_GetError());
-		return EXIT_FAILURE;
-	}
-
 	if(SDL_Init(SDL_INIT_EVERYTHING))
 	{
 		SDL_Log("SDL_Init error: %s\n",SDL_GetError());
 		return EXIT_FAILURE;
 	}
-
-	int ww = 800, wh = 600;
-	Uint32 wflags = SDL_WINDOW_VULKAN | SDL_WINDOW_RESIZABLE;
+	int ww = 640, wh = 480;
+	Uint32 wflags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
 	SDL_Window *w = SDL_CreateWindow("Title here",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,ww,wh,wflags);
 	if(!w)
 	{
@@ -33,91 +26,53 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	if (SDL_Vulkan_LoadLibrary(NULL) == -1)
+	SDL_GLContext gContext = SDL_GL_CreateContext(w);
+	if(!gContext)
 	{
-		// Handle loading error
-		SDL_Log("Unable to load Vulkan library: %s", SDL_GetError());
-		SDL_DestroyWindow(w);
 		SDL_DestroyRenderer(r);
+		SDL_DestroyWindow(w);
 		SDL_Quit();
-		return EXIT_FAILURE;
+		SDL_Log("SDL_GL_CreateContext error: %s\n",SDL_GetError());
 	}
 
-	//Uint32 extensionCount = 0;
-	//vkEnumerateInstanceExtensionProperties(NULL,&extensionCount,NULL);
-	//VkExtensionProperties* extensionProperties = malloc(sizeof(VkExtensionProperties) * extensionCount);
-	//vkEnumerateInstanceExtensionProperties(NULL,&extensionCount,extensionProperties);
-	//printf("%d extensions supported!\n",extensionCount);
-	//const char** extensions = malloc(sizeof(char*) * extensionCount);
-
-	//for (int i = 0; i < extensionCount; i ++)
-    //{
-	//	extensions[i] = extensionProperties[i].extensionName;
-    //    printf("%u: %s\n", i, extensions[i]);
-    //}
-
-	VkInstance instance = NULL;
-	VkApplicationInfo appInfo;
-	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	appInfo.pApplicationName = "Hello triangle!";
-	appInfo.applicationVersion = VK_MAKE_VERSION(1,0,0);
-	appInfo.pEngineName = "No Engine";
-	appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-	appInfo.apiVersion = VK_API_VERSION_1_0;
-	appInfo.pNext = NULL;
-
-	VkInstanceCreateInfo createInfo = {};
-	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-	createInfo.pApplicationInfo = &appInfo;
-	createInfo.enabledLayerCount = 0;
-	//createInfo.enabledExtensionCount = extensionCount;
-	//createInfo.ppEnabledExtensionNames = extensions;
-
-	if(vkCreateInstance(&createInfo,NULL,&instance) != VK_SUCCESS)
+	GLenum err = glewInit();
+	if(err != GLEW_OK)
 	{
-		SDL_Log("Unable to create Vulkan instance: %s", SDL_GetError());
-		//free(extensions);
-		//free(extensionProperties);
-		SDL_DestroyWindow(w);
+		SDL_Log("glewInit failure: %s\n",glewGetErrorString(err));
+		SDL_GL_DeleteContext(gContext);
 		SDL_DestroyRenderer(r);
-		SDL_Quit();
-		return EXIT_FAILURE;
-	}
-
-	uint32_t extensionCount;
-	if (!SDL_Vulkan_GetInstanceExtensions(w, &extensionCount, NULL))
-	{
-		// Handle extension retrieval error
-		SDL_Log("Unable to retrieve Vulkan extensions (1): %s", SDL_GetError());
-		SDL_DestroyWindow(w);
-		SDL_DestroyRenderer(r);
-		SDL_Quit();
-		return EXIT_FAILURE;
-	}
-
-	const char** extensionNames = malloc(extensionCount * sizeof(const char*));
-	if (!SDL_Vulkan_GetInstanceExtensions(w, &extensionCount, extensionNames))
-	{
-		// Handle extension retrieval error
-		SDL_Log("Unable to retrieve Vulkan extensions (2): %s", SDL_GetError());
-		free(extensionNames);
 		SDL_DestroyWindow(w);
 		SDL_Quit();
-		return EXIT_FAILURE;
+		SDL_Log("initGL failure!\n");
 	}
 
-	VkSurfaceKHR surface;
-	if(!SDL_Vulkan_CreateSurface(w,instance,&surface))
-	{
-		SDL_Log("Unable to create Vulkan surface: %s", SDL_GetError());
-		vkDestroyInstance(instance,NULL);
-		//free(extensions);
-		//free(extensionProperties);
-		SDL_DestroyWindow(w);
-		SDL_DestroyRenderer(r);
-		SDL_Quit();
-		return EXIT_FAILURE;
-	}
+	//int hex_len = 100;
+	//float sqrt3o2 = cosf(30);
+	//const GLfloat cube_vertices[] =
+	//{
+	//	0.0,				0.0,
+	//	0.0,				hex_len,
+	//	hex_len*sqrt3o2,	hex_len/2,
+	//	hex_len,			0.0,
+	//	hex_len*sqrt3o2,	-hex_len/2,
+	//	0.0,				-hex_len,
+	//	-hex_len*sqrt3o2,	-hex_len/2,
+	//	-hex_len,			0.0,
+	//	-hex_len*sqrt3o2,	hex_len/2
+	//};
+	//const GLuint vertex_indices[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+
+	////	Start of boilerplate
+	//GLuint cube_vbuffer;
+	//glGenBuffers(1, &cube_vbuffer);
+	//glBindBuffer(GL_ARRAY_BUFFER,cube_vbuffer);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(cube_vertices), cube_vertices, GL_STATIC_DRAW);
+	////
+	//GLuint cube_ibuffer;
+	//glGenBuffers(1, &cube_ibuffer);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,cube_ibuffer);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertex_indices), vertex_indices, GL_STATIC_DRAW);
+	////	End of boilerplate
 
 	bool should_close = false;
 	while(!should_close)
@@ -134,6 +89,10 @@ int main(int argc, char *argv[])
 					break;
 			}
 			SDL_RenderClear(r);
+
+			glClearColor((0xab)/255.0, 0x10/255.0, 0xfe/255.0, 1.0);
+			glClear(GL_COLOR_BUFFER_BIT);
+
 			SDL_RenderPresent(r);
 			SDL_Delay(1000/60);
 		}
@@ -142,8 +101,5 @@ int main(int argc, char *argv[])
 	SDL_DestroyRenderer(r);
 	SDL_DestroyWindow(w);
 	SDL_Quit();
-	free(extensionNames);
-	//free(extensionProperties);
-	//free(extensions);
 	return EXIT_SUCCESS;
 }
