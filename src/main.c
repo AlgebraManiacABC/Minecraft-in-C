@@ -17,19 +17,9 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	SDL_Renderer *r = SDL_CreateRenderer(w,-1,SDL_RENDERER_ACCELERATED);
-	if(!r)
-	{
-		SDL_DestroyWindow(w);
-		SDL_Quit();
-		SDL_Log("SDL_CreateRenderer error: %s\n",SDL_GetError());
-		return EXIT_FAILURE;
-	}
-
 	SDL_GLContext gContext = SDL_GL_CreateContext(w);
 	if(!gContext)
 	{
-		SDL_DestroyRenderer(r);
 		SDL_DestroyWindow(w);
 		SDL_Quit();
 		SDL_Log("SDL_GL_CreateContext error: %s\n",SDL_GetError());
@@ -40,7 +30,6 @@ int main(int argc, char *argv[])
 	{
 		SDL_Log("glewInit failure: %s\n",glewGetErrorString(err));
 		SDL_GL_DeleteContext(gContext);
-		SDL_DestroyRenderer(r);
 		SDL_DestroyWindow(w);
 		SDL_Quit();
 		SDL_Log("initGL failure!\n");
@@ -121,7 +110,6 @@ int main(int argc, char *argv[])
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0,4,GL_FLOAT,GL_FALSE,0,0);
 	glDrawArrays(GL_TRIANGLES,0,3);
-	//SDL_RenderPresent(r);
 	//SDL_Delay(5000);
 	//exit(EXIT_SUCCESS);
 
@@ -164,20 +152,18 @@ int main(int argc, char *argv[])
 				default:
 					break;
 			}
-			//SDL_RenderClear(r);
 
-			//glClearColor((0xab)/255.0, 0x10/255.0, 0xfe/255.0, 1.0);
-			//glClear(GL_COLOR_BUFFER_BIT);
+			glClearColor((0xab)/255.0, 0x10/255.0, 0xfe/255.0, 1.0);
+			glClear(GL_COLOR_BUFFER_BIT);
 			glUseProgram(shaderProgram);
 			glBindBuffer(GL_ARRAY_BUFFER,vertex_buffer);
 			glDrawArrays(GL_TRIANGLES,0,3);
 
-			SDL_RenderPresent(r);
+			SDL_GL_SwapWindow(w);
 			SDL_Delay(1000/60);
 		}
 	}
 
-	SDL_DestroyRenderer(r);
 	SDL_DestroyWindow(w);
 	SDL_Quit();
 	return EXIT_SUCCESS;
