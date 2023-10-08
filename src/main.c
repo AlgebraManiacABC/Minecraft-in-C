@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
 				default:
 					break;
 			}
-        }
+		}
 
 		glClearColor((0xab)/255.0, 0x10/255.0, 0xfe/255.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
