@@ -49,16 +49,17 @@ int main(int argc, char *argv[])
 		-hex_len,			0.0,		//	7: Left
 		-hex_len*sqrt3o2,	hex_len/2	//	8: Up-left
 	};
+	GLfloat hex_angles[] = {3.14/2, 3.14/6, -3.14/6, 3*3.14/2, 7*3.14/6, 5*3.14/6};
 	GLfloat hex_vertices[] =
 	{
 		0.0,				0.0,		//	0: 0,0
-		0.0,				hex_len,	//	1: Top
-		hex_len*sqrt3o2,	hex_len/2,	//	2: Up-right
-		hex_len*sqrt3o2,	-hex_len/2,	//	3: Down-right
-		0.0,				-hex_len,	//	4: Down
-		-hex_len*sqrt3o2,	-hex_len/2,	//	5: Down-left
-		-hex_len*sqrt3o2,	hex_len/2,	//	6: Up-left
-		0.0,				hex_len		//	1: Top
+		hex_len*cosf(hex_angles[0]), hex_len*sinf(hex_angles[0]),
+		hex_len*cosf(hex_angles[1]), hex_len*sinf(hex_angles[1]),
+		hex_len*cosf(hex_angles[2]), hex_len*sinf(hex_angles[2]),
+		hex_len*cosf(hex_angles[3]), hex_len*sinf(hex_angles[3]),
+		hex_len*cosf(hex_angles[4]), hex_len*sinf(hex_angles[4]),
+		hex_len*cosf(hex_angles[5]), hex_len*sinf(hex_angles[5]),
+		hex_len*cosf(hex_angles[0]), hex_len*sinf(hex_angles[0])
 	};
 	const GLuint hex_indices[] = { 0, 1, 2, 3, 4, 5, 6, 1};
 
