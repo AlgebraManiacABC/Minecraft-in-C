@@ -152,16 +152,16 @@ int main(int argc, char *argv[])
 				default:
 					break;
 			}
-
-			glClearColor((0xab)/255.0, 0x10/255.0, 0xfe/255.0, 1.0);
-			glClear(GL_COLOR_BUFFER_BIT);
-			glUseProgram(shaderProgram);
-			glBindBuffer(GL_ARRAY_BUFFER,vertex_buffer);
-			glDrawArrays(GL_TRIANGLES,0,3);
-
-			SDL_GL_SwapWindow(w);
-			SDL_Delay(1000/60);
 		}
+
+		glClearColor((0xab)/255.0, 0x10/255.0, 0xfe/255.0, 1.0);
+		glClear(GL_COLOR_BUFFER_BIT);
+		glUseProgram(shaderProgram);
+		glBindBuffer(GL_ARRAY_BUFFER,vertex_buffer);
+		glDrawArrays(GL_TRIANGLES,0,3);
+
+		SDL_GL_SwapWindow(w);
+		SDL_Delay(1000/60);
 	}
 
 	SDL_DestroyWindow(w);
