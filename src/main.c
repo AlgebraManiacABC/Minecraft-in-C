@@ -35,28 +35,39 @@ int main(int argc, char *argv[])
 		SDL_Log("initGL failure!\n");
 	}
 
-	int hex_len = 100;
+	int hex_len = 1.0;
 	float sqrt3o2 = cosf(30);
-	const GLfloat cube_vertices[] =
+	GLfloat cube_vertices[] =
 	{
-		0.0,				0.0,
-		0.0,				hex_len,
-		hex_len*sqrt3o2,	hex_len/2,
-		hex_len,			0.0,
-		hex_len*sqrt3o2,	-hex_len/2,
-		0.0,				-hex_len,
-		-hex_len*sqrt3o2,	-hex_len/2,
-		-hex_len,			0.0,
-		-hex_len*sqrt3o2,	hex_len/2
+		0.0,				0.0,		//	0: 0,0
+		0.0,				hex_len,	//	1: Top
+		hex_len*sqrt3o2,	hex_len/2,	//	2: Up-right
+		hex_len,			0.0,		//	3: Right
+		hex_len*sqrt3o2,	-hex_len/2,	//	4: Down-right
+		0.0,				-hex_len,	//	5: Down
+		-hex_len*sqrt3o2,	-hex_len/2,	//	6: Down-left
+		-hex_len,			0.0,		//	7: Left
+		-hex_len*sqrt3o2,	hex_len/2	//	8: Up-left
 	};
-	const GLuint vertex_indices[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+	GLfloat hex_vertices[] =
+	{
+		0.0,				0.0,		//	0: 0,0
+		0.0,				hex_len,	//	1: Top
+		hex_len*sqrt3o2,	hex_len/2,	//	2: Up-right
+		hex_len*sqrt3o2,	-hex_len/2,	//	3: Down-right
+		0.0,				-hex_len,	//	4: Down
+		-hex_len*sqrt3o2,	-hex_len/2,	//	5: Down-left
+		-hex_len*sqrt3o2,	hex_len/2,	//	6: Up-left
+		0.0,				hex_len		//	1: Top
+	};
+	const GLuint hex_indices[] = { 0, 1, 2, 3, 4, 5, 6, 1};
 
-	float vertexPositions[] =
-	{
-		0.75f, 0.75f, 0.0f, 1.0f,
-		0.75f, -0.75f, 0.0f, 1.0f,
-		-0.75f, -0.75f, 0.0f, 1.0f,
-	};
+	//float vertexPositions[] =
+	//{
+	//	0.75f, 0.75f, 0.0f, 1.0f,
+	//	0.75f, -0.75f, 0.0f, 1.0f,
+	//	-0.75f, -0.75f, 0.0f, 1.0f,
+	//};
 
 	GLuint cube_vbuffer;
 	glGenBuffers(1, &cube_vbuffer);
@@ -67,13 +78,18 @@ int main(int argc, char *argv[])
 	GLuint cube_ibuffer;
 	glGenBuffers(1, &cube_ibuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,cube_ibuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertex_indices), vertex_indices, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(hex_indices), hex_indices, GL_STATIC_DRAW);
 	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
 
-	GLuint vertex_buffer;
-	glGenBuffers(1, &vertex_buffer);
-	glBindBuffer(GL_ARRAY_BUFFER,vertex_buffer);
-	glBufferData(GL_ARRAY_BUFFER,sizeof(vertexPositions),vertexPositions,GL_STATIC_DRAW);
+	GLuint hex_buffer;
+	glGenBuffers(1, &hex_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER,hex_buffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(hex_vertices), hex_vertices, GL_STATIC_DRAW);
+
+	//GLuint vertex_buffer;
+	//glGenBuffers(1, &vertex_buffer);
+	//glBindBuffer(GL_ARRAY_BUFFER,vertex_buffer);
+	//glBufferData(GL_ARRAY_BUFFER,sizeof(vertexPositions),vertexPositions,GL_STATIC_DRAW);
 
 	const char *fragmentShaderSource =
 	"#version 330 core\n"
@@ -105,13 +121,9 @@ int main(int argc, char *argv[])
 	}
 	glUseProgram(shaderProgram);
 
-	//glBindBuffer(GL_ARRAY_BUFFER,cube_vbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER,vertex_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER,hex_buffer);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0,4,GL_FLOAT,GL_FALSE,0,0);
-	glDrawArrays(GL_TRIANGLES,0,3);
-	//SDL_Delay(5000);
-	//exit(EXIT_SUCCESS);
+	glVertexAttribPointer(0,2,GL_FLOAT,GL_FALSE,0,0);
 
 	bool should_close = false;
 	while(!should_close)
@@ -130,23 +142,29 @@ int main(int argc, char *argv[])
 						float x,y;
 						x = event.button.x;
 						y = event.button.y;
-						static GLuint which_vertex = 0;
+						static GLuint which_vertex = 1;
 						x -= (ww/2.0);
 						y -= (wh/2.0);
 						x /= (ww/2.0);
 						y /= -(wh/2.0);
-						vertexPositions[which_vertex*4] = x;
-						vertexPositions[which_vertex*4 + 1] = y;
+						//vertexPositions[which_vertex*4] = x;
+						//vertexPositions[which_vertex*4 + 1] = y;
+						hex_vertices[which_vertex*2] = x;
+						hex_vertices[which_vertex*2 + 1] = y;
+						if(which_vertex == 1)
+						{
+							hex_vertices[7*2] = x;
+							hex_vertices[7*2 + 1] = y;
+						}
 						glUseProgram(shaderProgram);
-						glBindBuffer(GL_ARRAY_BUFFER,vertex_buffer);
-						glBufferData(GL_ARRAY_BUFFER,sizeof(vertexPositions),vertexPositions,GL_STATIC_DRAW);
-						//SDL_Log("New vertexPositions[%d]: [%f,%f]\n",
-						//	which_vertex,
-						//	vertexPositions[which_vertex*4],
-						//	vertexPositions[which_vertex*4 + 1]);
-						glBindBuffer(GL_ARRAY_BUFFER,vertex_buffer);
-						glEnableVertexAttribArray(0);
-						glVertexAttribPointer(0,4,GL_FLOAT,GL_FALSE,0,0);
+						//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,cube_ibuffer);
+						//glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(hex_indices),vertex_indices,GL_STATIC_DRAW);
+						//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,cube_ibuffer);
+						glBindBuffer(GL_ARRAY_BUFFER,hex_buffer);
+						glBufferData(GL_ARRAY_BUFFER,sizeof(hex_vertices),hex_vertices,GL_STATIC_DRAW);
+						glVertexAttribPointer(0,2,GL_FLOAT,GL_FALSE,0,0);
+						SDL_Log("Vertex '%d' set to (%.2f, %.2f)\n",which_vertex,x,y);
+						if(++which_vertex > 6) which_vertex = 1;
 					}
 					break;
 				default:
@@ -157,8 +175,14 @@ int main(int argc, char *argv[])
 		glClearColor((0xab)/255.0, 0x10/255.0, 0xfe/255.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
 		glUseProgram(shaderProgram);
-		glBindBuffer(GL_ARRAY_BUFFER,vertex_buffer);
-		glDrawArrays(GL_TRIANGLES,0,3);
+		glBindBuffer(GL_ARRAY_BUFFER,hex_buffer);
+		glDrawArrays(GL_TRIANGLE_FAN,0,8);
+	    //glDrawElements(
+	    //	GL_TRIANGLE_FAN,      // mode
+	    //	6,    // count
+	    //	GL_UNSIGNED_INT,   // type
+	    //	(void*)0           // element array buffer offset
+	    //);
 
 		SDL_GL_SwapWindow(w);
 		SDL_Delay(1000/60);
