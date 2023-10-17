@@ -94,18 +94,35 @@ int main(int argc, char *argv[])
 	//glBufferData(GL_ARRAY_BUFFER,sizeof(vertexPositions),vertexPositions,GL_STATIC_DRAW);
 
 	GLuint fragmentShader = mcCreateShader("../src/colorchange.frag",GL_FRAGMENT_SHADER);
-	//GLuint vertexShader = mcCreateShader("../src/rotate.vert",GL_VERTEX_SHADER);
-	GLuint shaderProgram = mcCreateProgram(1,fragmentShader);//,vertexShader);
+	GLuint vertexShader = mcCreateShader("../src/transform.vert",GL_VERTEX_SHADER);
+	GLuint shaderProgram = mcCreateProgram(2,fragmentShader,vertexShader);
 
 	GLint colorVarLocation = glGetUniformLocation(shaderProgram,"varyingColor");
 	glUseProgram(shaderProgram);
 	GLfloat redValue = (sinf(clock()/10000.0)+1)/2.0;
 	glUniform4f(colorVarLocation,redValue,0.0f,0.0f,0.0f);
 
-	//GLint rotateVarLocation = glGetUniformLocation(shaderProgram,"transform");
-	//glUseProgram(shaderProgram);
-	//float matrix[4] = {1.0f};
-	//mat4 vector = {{1,0,0,1}};
+	GLint transformVarLocation = glGetUniformLocation(shaderProgram,"transform");
+	glUseProgram(shaderProgram);
+	mat4 testMat4 = GLM_MAT4_IDENTITY_INIT;
+	//glm_mat4_scale(testMat4,5.0f);
+	//for(int i=0; i<4; i++)
+	//{
+	//	for(int j=0; j<4; j++)
+	//	{
+	//		printf("\t%.1ff",testMat4[i][j]);
+	//	}
+	//	puts("");
+	//}
+	//glm_rotate_x(testMat4,90.0f,testMat4);
+	//for(int i=0; i<4; i++)
+	//{
+	//	for(int j=0; j<4; j++)
+	//	{
+	//		printf("\t%.1ff",testMat4[i][j]);
+	//	}
+	//	puts("");
+	//}
 	//glm_mat4_make(&matrix,&transform);
 	//mat4 identity = {{1,0,0,0}};
 	//vec3 transformBy = {1,1,0};
@@ -114,7 +131,7 @@ int main(int argc, char *argv[])
 	//mat4 dest;
 	//glm_mat4_mul(vector,identity,dest);
 	//printf("dest: %.2f, %.2f, %.2f, %.2f\n",(*dest)[0],(*dest)[1],(*dest)[2],(*dest)[3]);
-	//glUniformMatrix4fv(rotateVarLocation,1,GL_FALSE,(float*)vector);
+	glUniformMatrix4fv(transformVarLocation,1,GL_FALSE,(GLfloat*)testMat4);
 
 	glBindBuffer(GL_ARRAY_BUFFER,hex_buffer);
 	glEnableVertexAttribArray(0);
@@ -177,6 +194,11 @@ int main(int argc, char *argv[])
 		glUseProgram(shaderProgram);
 	redValue = (sinf(clock()/10000.0)+1)/2.0;
 	glUniform4f(colorVarLocation,redValue,0.0f,0.0f,0.0f);
+
+	glm_rotate_x(testMat4,0.1f,testMat4);
+	glm_rotate_y(testMat4,0.1f,testMat4);
+	glm_rotate_z(testMat4,0.1f,testMat4);
+	glUniformMatrix4fv(transformVarLocation,1,GL_FALSE,(GLfloat*)testMat4);
 		glBindBuffer(GL_ARRAY_BUFFER,hex_buffer);
 		glDrawArrays(GL_TRIANGLE_FAN,0,8);
 	    //glDrawElements(
