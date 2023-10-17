@@ -93,10 +93,29 @@ int main(int argc, char *argv[])
 	//glBindBuffer(GL_ARRAY_BUFFER,vertex_buffer);
 	//glBufferData(GL_ARRAY_BUFFER,sizeof(vertexPositions),vertexPositions,GL_STATIC_DRAW);
 
-	GLuint fragmentShader = mcCreateShader("../src/orange.frag",GL_FRAGMENT_SHADER);
-	GLuint shaderProgram = mcCreateProgram(1,fragmentShader);
+	GLuint fragmentShader = mcCreateShader("../src/colorchange.frag",GL_FRAGMENT_SHADER);
+	//GLuint vertexShader = mcCreateShader("../src/rotate.vert",GL_VERTEX_SHADER);
+	GLuint shaderProgram = mcCreateProgram(1,fragmentShader);//,vertexShader);
 
+	GLint colorVarLocation = glGetUniformLocation(shaderProgram,"varyingColor");
 	glUseProgram(shaderProgram);
+	GLfloat redValue = (sinf(clock()/10000.0)+1)/2.0;
+	glUniform4f(colorVarLocation,redValue,0.0f,0.0f,0.0f);
+
+	//GLint rotateVarLocation = glGetUniformLocation(shaderProgram,"transform");
+	//glUseProgram(shaderProgram);
+	//float matrix[4] = {1.0f};
+	//mat4 vector = {{1,0,0,1}};
+	//glm_mat4_make(&matrix,&transform);
+	//mat4 identity = {{1,0,0,0}};
+	//vec3 transformBy = {1,1,0};
+	//glm_translate2d(identity,transformBy);
+	//printf("identity: %.2f, %.2f, %.2f, %.2f\n",(*identity)[0],(*identity)[1],(*identity)[2],(*identity)[3]);
+	//mat4 dest;
+	//glm_mat4_mul(vector,identity,dest);
+	//printf("dest: %.2f, %.2f, %.2f, %.2f\n",(*dest)[0],(*dest)[1],(*dest)[2],(*dest)[3]);
+	//glUniformMatrix4fv(rotateVarLocation,1,GL_FALSE,(float*)vector);
+
 	glBindBuffer(GL_ARRAY_BUFFER,hex_buffer);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0,2,GL_FLOAT,GL_FALSE,0,0);
@@ -139,8 +158,12 @@ int main(int argc, char *argv[])
 						glBindBuffer(GL_ARRAY_BUFFER,hex_buffer);
 						glBufferData(GL_ARRAY_BUFFER,sizeof(hex_vertices),hex_vertices,GL_STATIC_DRAW);
 						glVertexAttribPointer(0,2,GL_FLOAT,GL_FALSE,0,0);
-						SDL_Log("Vertex '%d' set to (%.2f, %.2f)\n",which_vertex,x,y);
+						//SDL_Log("Vertex '%d' set to (%.2f, %.2f)\n",which_vertex,x,y);
 						if(++which_vertex > 6) which_vertex = 1;
+					}
+					else if(event.button.button == SDL_BUTTON_RIGHT)
+					{
+						printf("Test message\n");
 					}
 					break;
 				default:
@@ -150,7 +173,10 @@ int main(int argc, char *argv[])
 
 		glClearColor((0xab)/255.0, 0x10/255.0, 0xfe/255.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
+	colorVarLocation = glGetUniformLocation(shaderProgram,"varyingColor");
 		glUseProgram(shaderProgram);
+	redValue = (sinf(clock()/10000.0)+1)/2.0;
+	glUniform4f(colorVarLocation,redValue,0.0f,0.0f,0.0f);
 		glBindBuffer(GL_ARRAY_BUFFER,hex_buffer);
 		glDrawArrays(GL_TRIANGLE_FAN,0,8);
 	    //glDrawElements(
