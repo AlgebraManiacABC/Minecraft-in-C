@@ -1,4 +1,5 @@
 #include "main.h"
+#include "shaders.h"
 
 int main(int argc, char *argv[])
 {
@@ -92,36 +93,10 @@ int main(int argc, char *argv[])
 	//glBindBuffer(GL_ARRAY_BUFFER,vertex_buffer);
 	//glBufferData(GL_ARRAY_BUFFER,sizeof(vertexPositions),vertexPositions,GL_STATIC_DRAW);
 
-	const char *fragmentShaderSource =
-	"#version 330 core\n"
-	"out vec4 FragColor;\n\n"
-	"void main()\n"
-	"{\n"
-    "FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-	"}";
-	GLuint fragmentShader =glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader,1,&fragmentShaderSource,NULL);
-	glCompileShader(fragmentShader);
-	int success;
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if(!success)
-	{
-		char info_log[512]={0};
-		glGetShaderInfoLog(fragmentShader, 512, NULL, info_log);
-		SDL_Log("Fragment Shader did not compile: %s\n",info_log);
-		return EXIT_FAILURE;
-	}
-	GLuint shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram,fragmentShader);
-	glLinkProgram(shaderProgram);
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if(!success) {
-		char info_log[512]={0};
-		glGetProgramInfoLog(shaderProgram, 512, NULL, info_log);
-		SDL_Log("Shader linking failure: %s\n",info_log);
-	}
-	glUseProgram(shaderProgram);
+	GLuint fragmentShader = mcCreateShader("../src/orange.frag",GL_FRAGMENT_SHADER);
+	GLuint shaderProgram = mcCreateProgram(1,fragmentShader);
 
+	glUseProgram(shaderProgram);
 	glBindBuffer(GL_ARRAY_BUFFER,hex_buffer);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0,2,GL_FLOAT,GL_FALSE,0,0);
