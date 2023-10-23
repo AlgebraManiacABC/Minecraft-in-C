@@ -7,22 +7,32 @@ set(CMAKE_C_STANDARD 11)
 
 file(GLOB SOURCES src/*c)
 add_executable(${PROJECT_NAME} ${SOURCES})
+include_directories(${CMAKE_SOURCE_DIR}/lib)
+link_directories(${CMAKE_SOURCE_DIR}/src)
+
+
+find_package(GLEW REQUIRED GLEW_USE_STATIC_LIBS)
+include_directories(${GLEW_INCLUDE_DIRS})
+if(UNIX)
+	target_link_libraries(${PROJECT_NAME} "/usr/lib/x86_64-linux-gnu/libGLEW.so")
+else()
+	target_link_libraries(${PROJECT_NAME} "C:/Program Files (x86)/glew/lib/libglew32.dll.a")
+endif()
+
+find_package(OpenGL REQUIRED)
+include_directories(${OPENGL_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
 
 find_package(SDL2 REQUIRED)
-find_package(GLEW REQUIRED GLEW_USE_STATIC_LIBS)
-find_package(OpenGL REQUIRED)
-#find_package(cglm REQUIRED)
-
-include_directories(${CMAKE_SOURCE_DIR}/lib)
-include_directories(${GLEW_INCLUDE_DIRS})
-include_directories(${OPENGL_INCLUDE_DIR})
 include_directories(${SDL2_INCLUDE_DIRS})
-
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Werror -std=c11 -lm)
-
-link_directories(lib)
-#target_link_libraries(${PROJECT_NAME} m)
-target_link_libraries(${PROJECT_NAME} ${GLEW_STATIC_LIBRARIES} m)
-target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} cglm)
+
+if(UNIX)
+	target_link_libraries(${PROJECT_NAME} cglm)
+else()
+	include_directories("C:/Program Files (x86)/cglm/include")
+	target_link_libraries(${PROJECT_NAME} "C:/Program Files (x86)/cglm/lib/libcglm.dll.a")
+endif()
+
+target_link_libraries(${PROJECT_NAME} m)
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Werror -std=c11 -lm)
