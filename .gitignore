@@ -1,16 +1,26 @@
 # Prerequisites
 *.d
 
+# Test Dirs
+test*
+
 # Build Dirs
 build
 buildNT
 build*
 
-# CMake/Make Files
+# CMake Files
 CMakeFiles
 cmake_install.cmake
 CMakeCache.txt
+
+# Makefile config (please make your own based on config_EXAMPLE.mk)
+config.mk
+config*.mk
 Makefile
+
+# VS Code Files
+.vscode
 
 # Object files
 *.o
