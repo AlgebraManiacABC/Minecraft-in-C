@@ -96,13 +96,13 @@ void setMvpMatrix(camera cam, mat4 modelMatrix, mat4 mvpMatrix)
 {
 	vec3 cameraDirection =
 	{
-		cosf(cam.pitch) * sinf(cam.yaw),
+		cosf(cam.pitch) * sinf(cam.yaw + glm_rad(180)),
 		sinf(cam.pitch),
-		cosf(cam.pitch) * cosf(cam.yaw)
+		cosf(cam.pitch) * cosf(cam.yaw + glm_rad(180))
 	};
 
 	mat4 viewMatrix;
-	glm_look_anyup((vec3){cam.x,cam.y,cam.z},cameraDirection,viewMatrix);
+	glm_look((vec3){cam.x,cam.y,cam.z},cameraDirection,(vec3){0,1,0},viewMatrix);
 	mat4 projectionMatrix;
 	float fovy = glm_rad(90);
 	float nearZ = 0.1f;

@@ -12,6 +12,8 @@
 
 void renderCube(GLuint shaderProgram, camera cam, vec3 voxelPosition);
 
-void renderHex(GLuint shaderProgram, camera cam, mat4 mvpMatrix);
+void renderHex(GLuint shaderProgram, camera cam, mat4 mvpMatrix, GLuint hexBuffer, GLuint transformMatrixLocation);
+
+void renderUI();
 
 #endif
