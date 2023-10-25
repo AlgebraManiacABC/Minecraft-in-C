@@ -29,39 +29,6 @@ void gameLoop(SDL_Window *w)
 	}
 	glUseProgram(shaderProgram);
 
-	//================//
-	//For hex use only//
-	//================//
-	float hex_len = 1.0f;
-	GLfloat hex_angles[] = {3.14/2, 3.14/6, -3.14/6, 3*3.14/2, 7*3.14/6, 5*3.14/6};
-	GLfloat hex_vertices[] =
-	{
-		0.0f,				0.0f,				-0.5f,		//	0: 0,0
-		hex_len*cosf(hex_angles[0]), hex_len*sinf(hex_angles[0]), 0.5f,
-		hex_len*cosf(hex_angles[1]), hex_len*sinf(hex_angles[1]), 0.5f,
-		hex_len*cosf(hex_angles[2]), hex_len*sinf(hex_angles[2]), 0.5f,
-		hex_len*cosf(hex_angles[3]), hex_len*sinf(hex_angles[3]), 0.5f,
-		hex_len*cosf(hex_angles[4]), hex_len*sinf(hex_angles[4]), 0.5f,
-		hex_len*cosf(hex_angles[5]), hex_len*sinf(hex_angles[5]), 0.5f,
-		hex_len*cosf(hex_angles[0]), hex_len*sinf(hex_angles[0]), 0.5f
-	};
-	const GLuint hex_indices[] = { 0, 1, 2, 3, 4, 5, 6, 1};
-
-	GLuint hexBuffer;
-	glGenBuffers(1, &hexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER,hexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(hex_vertices), hex_vertices, GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,0,0);
-
-	GLuint hex_ibuffer;
-	glGenBuffers(1, &hex_ibuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,hex_ibuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(hex_indices),hex_indices,GL_STATIC_DRAW);
-	//================//
-
-
 	//GLint colorVarLocation = glGetUniformLocation(shaderProgram,"varyingColor");
 	//GLfloat redValue = (sinf(clock()/10000.0)+1)/2.0;
 	//glUniform4f(colorVarLocation,redValue,0.0f,0.0f,0.0f);
@@ -70,11 +37,7 @@ void gameLoop(SDL_Window *w)
 
 	GLint transformMatrixLocation = glGetUniformLocation(shaderProgram,"transform");
 
-	//	For hex use only:
-	//mat4 hexModelMatrix = GLM_MAT4_IDENTITY_INIT;
-	//mat4 hexRotationMatrix = GLM_MAT4_IDENTITY_INIT;
-	//
-
+	initRenderer();
 	glClearColor((0xab)/255.0, 0x10/255.0, 0xfe/255.0, 1.0);
 	camera cam = initCamera(aspectRatio);
 	Uint32 buttonsHeld = (0b0);
@@ -90,29 +53,7 @@ void gameLoop(SDL_Window *w)
 		//redValue = (sinf(clock()/10000.0)+1)/2.0;
 		//glUniform4f(colorVarLocation,redValue,0.0f,0.0f,0.0f);
 
-		//	Rotate hex (hex use only)
-		//glm_rotate_x(hexRotationMatrix,0.1f,hexRotationMatrix);
-		//glm_rotate_y(hexRotationMatrix,0.1f,hexRotationMatrix);
-		//glm_rotate_z(hexRotationMatrix,0.1f,hexRotationMatrix);
-		//glm_mat4_copy(hexRotationMatrix,hexModelMatrix);
-		//
-
-		mat4 mvpMatrix;
-		//	Hex use only:
-		//setMvpMatrix(cam,hexModelMatrix,mvpMatrix);
-		//
-		//	No model transformations:
-		setMvpMatrix(cam,GLM_MAT4_IDENTITY,mvpMatrix);
-
-		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,hex_ibuffer);
-	    //glDrawElements(
-	    //	GL_TRIANGLE_FAN,      // mode
-	    //	8,    // count
-	    //	GL_UNSIGNED_INT,   // type
-	    //	(void*)0           // element array buffer offset
-	    //);
-
-		renderHex(shaderProgram,cam,mvpMatrix,hexBuffer,transformMatrixLocation);
+		renderCube(shaderProgram,cam,(vec3){0,0,0},transformMatrixLocation);
 		renderUI();
 		SDL_GL_SwapWindow(w);
 		SDL_Delay(1000/FPS);
