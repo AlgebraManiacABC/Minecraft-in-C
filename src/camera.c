@@ -27,27 +27,27 @@ void moveCamera(camera * cam, Uint32 cameraBitfield)
 	if((cameraBitfield & CAMERA_MOVE_LEFT) && !(cameraBitfield & CAMERA_MOVE_RIGHT))
 	{
 		//	Move camera left
-		cam->x += (CAM_UPF)*sinf(cam->yaw + glm_rad(90));
-		cam->z += (CAM_UPF)*cosf(cam->yaw + glm_rad(90));
+		cam->x -= (CAM_UPF)*sinf(cam->yaw + glm_rad(90));
+		cam->z -= (CAM_UPF)*cosf(cam->yaw + glm_rad(90));
 	}
 	else if(cameraBitfield & CAMERA_MOVE_RIGHT)
 	{
 		//	Move camera right
-		cam->x += (CAM_UPF)*sinf(cam->yaw - glm_rad(90));
-		cam->z += (CAM_UPF)*cosf(cam->yaw - glm_rad(90));
+		cam->x -= (CAM_UPF)*sinf(cam->yaw - glm_rad(90));
+		cam->z -= (CAM_UPF)*cosf(cam->yaw - glm_rad(90));
 	}
 
 	if((cameraBitfield & CAMERA_MOVE_FORWARD) && !(cameraBitfield & CAMERA_MOVE_BACKWARD))
 	{
 		//	Move camera forward
-		cam->x += (CAM_UPF)*sinf(cam->yaw);
-		cam->z += (CAM_UPF)*cosf(cam->yaw);
+		cam->x -= (CAM_UPF)*sinf(cam->yaw);
+		cam->z -= (CAM_UPF)*cosf(cam->yaw);
 	}
 	else if(cameraBitfield & CAMERA_MOVE_BACKWARD)
 	{
 		//	Move camera backward
-		cam->x -= (CAM_UPF)*sinf(cam->yaw);
-		cam->z -= (CAM_UPF)*cosf(cam->yaw);
+		cam->x += (CAM_UPF)*sinf(cam->yaw);
+		cam->z += (CAM_UPF)*cosf(cam->yaw);
 	}
 
 	if((cameraBitfield & CAMERA_MOVE_UP) && !(cameraBitfield & CAMERA_MOVE_DOWN))
@@ -80,15 +80,15 @@ void moveCamera(camera * cam, Uint32 cameraBitfield)
 	{
 		//	Angle camera up
 		cam->pitch += (CAM_UPF);
-		if(cam->pitch > glm_rad(90))
-			cam->pitch = glm_rad(90);
+		if(cam->pitch >= glm_rad(90))
+			cam->pitch = glm_rad(90 - 0.0001f);
 	}
 	else if(cameraBitfield & CAMERA_PITCH_DOWN)
 	{
 		//	Angle camera down
 		cam->pitch -= (CAM_UPF);
-		if(cam->pitch < glm_rad(-90))
-			cam->pitch = glm_rad(-90);
+		if(cam->pitch <= glm_rad(-90))
+			cam->pitch = glm_rad(-90 + 0.0001f);
 	}
 }
 
