@@ -9,3 +9,6 @@
 #include <SDL2/SDL_opengl.h>
 #include <cglm/cglm.h>
 #include <time.h>
+
+#define INITIAL_WINDOW_W (800)
+#define INITIAL_WINDOW_H (640)

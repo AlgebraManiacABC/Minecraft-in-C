@@ -5,9 +5,10 @@
 #include <stdio.h>
 #include <GL/glew.h>
 #include <stdarg.h>
+#include <stdlib.h>
 
-GLuint mcCreateShader(const char * shaderFilename, GLenum shaderType);
+GLuint createShader(const char * shaderFilename, GLenum shaderType);
 
-GLuint mcCreateProgram(size_t shaderCount, ...);
+GLuint createProgram(size_t shaderCount, ...);
 
 #endif

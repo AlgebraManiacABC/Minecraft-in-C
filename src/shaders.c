@@ -1,15 +1,21 @@
 #include "shaders.h"
+#include "debug.h"
 
-GLuint mcCreateShader(const char * shaderFilename, GLenum shaderType)
+GLuint createShader(const char * shaderFilename, GLenum shaderType)
 {
 	const char * shaderSource = NULL;
 	FILE * shaderFile = fopen(shaderFilename,"r");
 	if(!shaderFile)
 	{
-		fprintf(stderr,"Shader did not compile: %s could not be opened\n",shaderFilename);
+		setError(ERR_CODE,ERR_NOFIL);
 		return 0;
 	}
 	fscanf(shaderFile,"%m[^\xff]",&shaderSource);
+	if(!shaderSource)
+	{
+		setError(ERR_CODE,ERR_NOMEM);
+		return 0;
+	}
 	fclose(shaderFile);
 	GLuint shaderID = glCreateShader(shaderType);
 	glShaderSource(shaderID,1,&shaderSource,NULL);
@@ -20,13 +26,15 @@ GLuint mcCreateShader(const char * shaderFilename, GLenum shaderType)
 	{
 		char info_log[512]={0};
 		glGetShaderInfoLog(shaderID, 512, NULL, info_log);
-		fprintf(stderr,"Shader did not compile: %s\nFor reference, here is the source:\n```\n%s\n```\n",info_log,shaderSource);
+		setError(ERR_MESG,"Shader did not compile: %s\nFor reference, here is the source:\n```\n%s\n```",info_log,shaderSource);
+		//free(shaderSource);
 		return 0;
 	}
+	//free(shaderSource);
 	return shaderID;
 }
 
-GLuint mcCreateProgram(size_t shaderCount, ...)
+GLuint createProgram(size_t shaderCount, ...)
 {
 	GLuint shaderProgram = glCreateProgram();
 	va_list args;
@@ -42,7 +50,7 @@ GLuint mcCreateProgram(size_t shaderCount, ...)
 	if(!success) {
 		char info_log[512]={0};
 		glGetProgramInfoLog(shaderProgram, 512, NULL, info_log);
-		fprintf(stderr,"Shader linking failure: %s\n",info_log);
+		setError(ERR_MESG,"Shader linking failure: %s",info_log);
 		return 0;
 	}
 	return shaderProgram;
