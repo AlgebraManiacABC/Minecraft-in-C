@@ -52,3 +52,28 @@ const char * getError(void)
 
 	return errorString;
 }
+
+void print1dFloatArrayAsTable(float *arr, size_t rows, size_t cols)
+{
+	for(size_t r=0; r<rows; r++)
+	{
+		for(size_t c=0; c<cols; c++)
+		{
+			printf("%5.2ff%s",*(arr+c+(cols*r)),(c==cols-1?"\n":", "));
+		}
+	}
+}
+
+void GLAPIENTRY
+MessageCallback( GLenum source,
+                 GLenum type,
+                 GLuint id,
+                 GLenum severity,
+                 GLsizei length,
+                 const GLchar* message,
+                 const void* userParam )
+{
+  fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+           ( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ),
+            type, severity, message );
+}

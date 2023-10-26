@@ -54,6 +54,7 @@ void gameLoop(SDL_Window *w)
 		//glUniform4f(colorVarLocation,redValue,0.0f,0.0f,0.0f);
 
 		renderCube(shaderProgram,cam,(vec3){0,0,0},transformMatrixLocation);
+		//renderCube(shaderProgram,cam,(vec3){1,1,1},transformMatrixLocation);
 		renderUI();
 		SDL_GL_SwapWindow(w);
 		SDL_Delay(1000/FPS);
@@ -75,6 +76,9 @@ int handleEvents(bool *shouldClose, camera * cam, Uint32 * buttonsHeld)
 			case SDL_KEYDOWN:
 				switch(event.key.keysym.scancode)
 				{
+					case SDL_SCANCODE_RETURN:
+						toggleWireframe();
+						break;
 					case SDL_SCANCODE_ESCAPE:
 						(*shouldClose) = true;
 						return eventCount;

@@ -10,7 +10,9 @@
 #include <cglm/cglm.h>
 #include "camera.h"
 
-void initRenderer();
+void initRenderer(void);
+
+void toggleWireframe();
 
 void renderCube(GLuint shaderProgram, camera cam, vec3 voxelPosition, GLuint transformMatrixLocation);
 
