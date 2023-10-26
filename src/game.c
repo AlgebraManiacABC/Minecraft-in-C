@@ -38,6 +38,15 @@ void gameLoop(SDL_Window *w)
 	GLint transformMatrixLocation = glGetUniformLocation(shaderProgram,"transform");
 
 	initRenderer();
+	int blockCount = 100;
+	vec3 *blocks = malloc(sizeof(vec3)*blockCount);
+	srand((Uint64)main + time(NULL));
+	for(int i=0; i<blockCount; i++)
+	{
+		blocks[i][0] = rand()%20-10;
+		blocks[i][1] = rand()%20-10;
+		blocks[i][2] = rand()%20-10;
+	}
 	glClearColor((0xab)/255.0, 0x10/255.0, 0xfe/255.0, 1.0);
 	camera cam = initCamera(aspectRatio);
 	Uint32 buttonsHeld = (0b0);
@@ -48,17 +57,21 @@ void gameLoop(SDL_Window *w)
 		if(shouldClose) return;
 		moveCamera(&cam,buttonsHeld);
 
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//redValue = (sinf(clock()/10000.0)+1)/2.0;
 		//glUniform4f(colorVarLocation,redValue,0.0f,0.0f,0.0f);
 
 		renderCube(shaderProgram,cam,(vec3){0,0,0},transformMatrixLocation);
-		//renderCube(shaderProgram,cam,(vec3){1,1,1},transformMatrixLocation);
+		for(int i=0; i<blockCount; i++)
+		{
+			renderCube(shaderProgram,cam,blocks[i],transformMatrixLocation);
+		}
 		renderUI();
 		SDL_GL_SwapWindow(w);
 		SDL_Delay(1000/FPS);
 	}
+	free(blocks);
 }
 
 int handleEvents(bool *shouldClose, camera * cam, Uint32 * buttonsHeld)
