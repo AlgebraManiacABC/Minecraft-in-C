@@ -18,9 +18,9 @@ typedef struct camera
 
 camera initCamera(float aspectRatio);
 
-void updateCameraAspectRatio(camera * cam, float aspectRatio);
+int updateCameraAspectRatio(camera * cam, float aspectRatio);
 
-void moveCamera(camera * cam, Uint32 buttonsHeld);
+int moveCamera(camera * cam, Uint32 buttonsHeld);
 
 void setMvpMatrix(camera cam, mat4 modelMatrix, mat4 mvpMatrix);
 

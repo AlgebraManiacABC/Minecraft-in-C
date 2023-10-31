@@ -55,6 +55,12 @@ const char * getError(void)
 
 void print1dFloatArrayAsTable(float *arr, size_t rows, size_t cols)
 {
+	if(!arr)
+	{
+		setError(ERR_CODE,ERR_NULLP);
+		return;
+	}
+
 	for(size_t r=0; r<rows; r++)
 	{
 		for(size_t c=0; c<cols; c++)

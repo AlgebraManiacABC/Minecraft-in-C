@@ -9,19 +9,9 @@ void gameLoop(SDL_Window *w)
 	SDL_GetWindowSize(w,&ww,&wh);
 	float aspectRatio = ww/wh;
 
-	GLuint fragmentShader = createShader("../src/shaders/light.frag",GL_FRAGMENT_SHADER);
-	if(!fragmentShader)
-	{
-		fprintf(stderr,"Couldn't create fragmentShader: %s\n",getError());
-		return;
-	}
-	GLuint vertexShader = createShader("../src/shaders/transform.vert",GL_VERTEX_SHADER);
-	if(!vertexShader)
-	{
-		fprintf(stderr,"Couldn't create vertexShader: %s\n",getError());
-		return;
-	}
-	GLuint shaderProgram = createProgram(2,fragmentShader,vertexShader);
+	GLuint shaderProgram = createProgram(2,
+			createShader("../src/shaders/light.frag",GL_FRAGMENT_SHADER),
+			createShader("../src/shaders/transform.vert",GL_VERTEX_SHADER));
 	if(!shaderProgram)
 	{
 		fprintf(stderr,"Couldn't create shader program: %s\n",getError());
@@ -37,10 +27,13 @@ void gameLoop(SDL_Window *w)
 
 	GLint transformMatrixLocation = glGetUniformLocation(shaderProgram,"transform");
 
+	GLint modelMatrixLocation = glGetUniformLocation(shaderProgram,"modelMatrix");
+	glUniformMatrix4fv(modelMatrixLocation,1,GL_FALSE,(float*)GLM_MAT4_IDENTITY);
+
 	initRenderer();
 	int blockCount = 100;
 	vec3 *blocks = malloc(sizeof(vec3)*blockCount);
-	srand((Uint64)main + time(NULL));
+	srand((Uint64)gameLoop + time(NULL));
 	for(int i=0; i<blockCount; i++)
 	{
 		blocks[i][0] = rand()%20-10;

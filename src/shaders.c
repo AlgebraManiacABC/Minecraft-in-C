@@ -16,7 +16,7 @@ GLuint createShader(const char * shaderFilename, GLenum shaderType)
 		setError(ERR_CODE,ERR_NOMEM);
 		return 0;
 	}
-	fclose(shaderFile);
+	(void)fclose(shaderFile);
 	GLuint shaderID = glCreateShader(shaderType);
 	glShaderSource(shaderID,1,&shaderSource,NULL);
 	glCompileShader(shaderID);

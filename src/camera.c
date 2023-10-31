@@ -17,20 +17,32 @@ camera initCamera(float aspectRatio)
 	return cam;
 }
 
-void updateCameraAspectRatio(camera * cam, float aspectRatio)
+int updateCameraAspectRatio(camera * cam, float aspectRatio)
 {
+	if(!cam)
+	{
+		setError(ERR_CODE,ERR_NULLP);
+		return EXIT_FAILURE;
+	}
 	cam->ar = aspectRatio;
+	return EXIT_SUCCESS;
 }
 
-void moveCamera(camera * cam, Uint32 cameraBitfield)
+int moveCamera(camera * cam, Uint32 cameraBitfield)
 {
+	if(!cam)
+	{
+		setError(ERR_CODE,ERR_NULLP);
+		return EXIT_FAILURE;
+	}
+
 	if((cameraBitfield & CAMERA_MOVE_LEFT) && !(cameraBitfield & CAMERA_MOVE_RIGHT))
 	{
 		//	Move camera left
 		cam->x -= (CAM_UPF)*sinf(cam->yaw + glm_rad(90));
 		cam->z -= (CAM_UPF)*cosf(cam->yaw + glm_rad(90));
 	}
-	else if(cameraBitfield & CAMERA_MOVE_RIGHT)
+	else if((cameraBitfield & CAMERA_MOVE_RIGHT) && !(cameraBitfield & CAMERA_MOVE_LEFT))
 	{
 		//	Move camera right
 		cam->x -= (CAM_UPF)*sinf(cam->yaw - glm_rad(90));
@@ -43,7 +55,7 @@ void moveCamera(camera * cam, Uint32 cameraBitfield)
 		cam->x -= (CAM_UPF)*sinf(cam->yaw);
 		cam->z -= (CAM_UPF)*cosf(cam->yaw);
 	}
-	else if(cameraBitfield & CAMERA_MOVE_BACKWARD)
+	else if((cameraBitfield & CAMERA_MOVE_BACKWARD) && !(cameraBitfield & CAMERA_MOVE_FORWARD))
 	{
 		//	Move camera backward
 		cam->x += (CAM_UPF)*sinf(cam->yaw);
@@ -55,7 +67,7 @@ void moveCamera(camera * cam, Uint32 cameraBitfield)
 		//	Move camera up
 		cam->y += (CAM_UPF);
 	}
-	else if(cameraBitfield & CAMERA_MOVE_DOWN)
+	else if((cameraBitfield & CAMERA_MOVE_DOWN) && !(cameraBitfield & CAMERA_MOVE_UP))
 	{
 		//	Move camera down
 		cam->y -= (CAM_UPF);
@@ -68,7 +80,7 @@ void moveCamera(camera * cam, Uint32 cameraBitfield)
 		if(cam->yaw > glm_rad(360))
 			cam->yaw -= glm_rad(360);
 	}
-	else if(cameraBitfield & CAMERA_YAW_RIGHT)
+	else if((cameraBitfield & CAMERA_YAW_RIGHT) && !(cameraBitfield & CAMERA_YAW_LEFT))
 	{
 		//	Turn camera right
 		cam->yaw -= (CAM_UPF);
@@ -83,13 +95,15 @@ void moveCamera(camera * cam, Uint32 cameraBitfield)
 		if(cam->pitch >= glm_rad(90))
 			cam->pitch = glm_rad(90 - 0.0001f);
 	}
-	else if(cameraBitfield & CAMERA_PITCH_DOWN)
+	else if((cameraBitfield & CAMERA_PITCH_DOWN) && !(cameraBitfield & CAMERA_PITCH_UP))
 	{
 		//	Angle camera down
 		cam->pitch -= (CAM_UPF);
 		if(cam->pitch <= glm_rad(-90))
 			cam->pitch = glm_rad(-90 + 0.0001f);
 	}
+
+	return EXIT_SUCCESS;
 }
 
 void setMvpMatrix(camera cam, mat4 modelMatrix, mat4 mvpMatrix)
