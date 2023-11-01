@@ -2,6 +2,7 @@
 #include "debug.h"
 #include "shaders.h"
 #include "render.h"
+#include "textures.h"
 
 void gameLoop(SDL_Window *w)
 {
@@ -9,8 +10,10 @@ void gameLoop(SDL_Window *w)
 	SDL_GetWindowSize(w,&ww,&wh);
 	float aspectRatio = ww/wh;
 
-	GLuint shaderProgram = createProgram(2,
+	GLuint shaderProgram = createProgram(4,
 			createShader("../src/shaders/light.frag",GL_FRAGMENT_SHADER),
+			createShader("../src/shaders/texture.frag",GL_FRAGMENT_SHADER),
+			createShader("../src/shaders/main.frag",GL_FRAGMENT_SHADER),
 			createShader("../src/shaders/transform.vert",GL_VERTEX_SHADER));
 	if(!shaderProgram)
 	{
@@ -30,7 +33,15 @@ void gameLoop(SDL_Window *w)
 	GLint modelMatrixLocation = glGetUniformLocation(shaderProgram,"modelMatrix");
 	glUniformMatrix4fv(modelMatrixLocation,1,GL_FALSE,(float*)GLM_MAT4_IDENTITY);
 
+	//GLint textureLocation = glGetUniformLocation(shaderProgram,"tex");
+
 	initRenderer();
+	GLuint stone = textureFromFile("../assets/stone.png");
+	if(!stone)
+	{
+		fprintf(stderr,"Error getting stone texture: %s\n",getError());
+		return;
+	}
 	int blockCount = 100;
 	vec3 *blocks = malloc(sizeof(vec3)*blockCount);
 	srand((Uint64)gameLoop + time(NULL));
@@ -49,16 +60,19 @@ void gameLoop(SDL_Window *w)
 		(void)handleEvents(&shouldClose, &cam, &buttonsHeld);
 		if(shouldClose) return;
 		moveCamera(&cam,buttonsHeld);
+		//char buf[256]={0};
+		//sprintf(buf,"XYZ: { %.2ff, %.2ff, %.2ff } || Yaw: %.2ff | Pitch %.2ff",cam.x,cam.y,cam.z,glm_deg(cam.yaw),glm_deg(cam.pitch));
+		//SDL_SetWindowTitle(w,buf);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//redValue = (sinf(clock()/10000.0)+1)/2.0;
 		//glUniform4f(colorVarLocation,redValue,0.0f,0.0f,0.0f);
 
-		renderCube(shaderProgram,cam,(vec3){0,0,0},transformMatrixLocation);
+		renderCube(shaderProgram,cam,(vec3){0,0,0},stone,transformMatrixLocation);
 		for(int i=0; i<blockCount; i++)
 		{
-			renderCube(shaderProgram,cam,blocks[i],transformMatrixLocation);
+			renderCube(shaderProgram,cam,blocks[i],stone,transformMatrixLocation);
 		}
 		renderUI();
 		SDL_GL_SwapWindow(w);

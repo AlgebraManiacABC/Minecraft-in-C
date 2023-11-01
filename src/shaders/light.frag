@@ -1,12 +1,11 @@
 #version 330 core
-out vec4 FragColor;
 in vec4 vertPos;
 in vec3 Normal;
 
 uniform vec3 objectColor;
 uniform mat4 modelMatrix;
 
-void main()
+vec4 light(vec4 texColor)
 {
 	//	Convert normals to world coordinates
 	vec3 realNormal = transpose(inverse(mat3(modelMatrix))) * Normal;
@@ -18,7 +17,8 @@ void main()
 	//	Ambient light
 	float ambientIntensity = 0.5f;	//	Out of 1.0f
 	vec3 ambient = ambientIntensity * lightColor;
-	vec3 result = ambient * objectColor;
+	//vec3 result = ambient * objectColor;
+	vec3 result = ambient * vec3(texColor);
 
 	//	Diffuse light
 	vec3 norm = normalize(realNormal);
@@ -26,7 +26,7 @@ void main()
 	float diffuseFactor = max(0, dot(norm,lightDir));
 	vec3 diffuse = diffuseFactor * lightColor;
 
-	vec3 finalResult = (result + diffuse) * objectColor;
+	vec3 finalResult = (result + diffuse) * vec3(texColor);
 
-	FragColor = vec4(finalResult, 1.0f);
+	return vec4(finalResult, 1.0f);
 }
