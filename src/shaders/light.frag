@@ -17,8 +17,8 @@ vec4 light(vec4 texColor)
 	//	Ambient light
 	float ambientIntensity = 0.5f;	//	Out of 1.0f
 	vec3 ambient = ambientIntensity * lightColor;
-	//vec3 result = ambient * objectColor;
-	vec3 result = ambient * vec3(texColor);
+	//vec3 intermediate = ambient * objectColor;
+	vec3 intermediate = ambient * vec3(texColor);
 
 	//	Diffuse light
 	vec3 norm = normalize(realNormal);
@@ -26,7 +26,7 @@ vec4 light(vec4 texColor)
 	float diffuseFactor = max(0, dot(norm,lightDir));
 	vec3 diffuse = diffuseFactor * lightColor;
 
-	vec3 finalResult = (result + diffuse) * vec3(texColor);
+	vec3 result = (intermediate + diffuse) * vec3(texColor);
 
-	return vec4(finalResult, 1.0f);
+	return vec4(result, 1.0f);
 }
