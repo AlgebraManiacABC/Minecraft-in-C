@@ -2,7 +2,6 @@
 in vec4 vertPos;
 in vec3 Normal;
 
-uniform vec3 objectColor;
 uniform mat4 modelMatrix;
 
 vec4 light(vec4 texColor)

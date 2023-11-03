@@ -8,7 +8,7 @@ void gameLoop(SDL_Window *w)
 {
 	int ww, wh;
 	SDL_GetWindowSize(w,&ww,&wh);
-	float aspectRatio = ww/wh;
+	float aspectRatio = ww/(float)wh;
 
 	GLuint shaderProgram = createProgram(4,
 			createShader("../src/shaders/light.frag",GL_FRAGMENT_SHADER),
