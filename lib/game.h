@@ -45,6 +45,6 @@ void gameLoop(SDL_Window *w);
  * 
  * @returns The number of events polled 
  */
-int handleEvents(bool *shouldClose, camera * cam, Uint32 * buttonsHeld);
+int handleEvents(SDL_Window *w, bool *shouldClose, camera * cam, Uint32 * buttonsHeld);
 
 #endif

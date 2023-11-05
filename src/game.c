@@ -36,6 +36,7 @@ void gameLoop(SDL_Window *w)
 	//GLint textureLocation = glGetUniformLocation(shaderProgram,"tex");
 
 	initRenderer();
+	stbi_set_flip_vertically_on_load(true);
 	GLuint stone = textureFromFile("../assets/stone.png");
 	if(!stone)
 	{
@@ -57,7 +58,7 @@ void gameLoop(SDL_Window *w)
 	bool shouldClose = false;
 	while(!shouldClose)
 	{
-		(void)handleEvents(&shouldClose, &cam, &buttonsHeld);
+		(void)handleEvents(w, &shouldClose, &cam, &buttonsHeld);
 		if(shouldClose) return;
 		moveCamera(&cam,buttonsHeld);
 		//char buf[256]={0};
@@ -81,7 +82,7 @@ void gameLoop(SDL_Window *w)
 	free(blocks);
 }
 
-int handleEvents(bool *shouldClose, camera * cam, Uint32 * buttonsHeld)
+int handleEvents(SDL_Window *w, bool *shouldClose, camera * cam, Uint32 * buttonsHeld)
 {
 	SDL_Event event;
 	Uint32 eventCount = 0;
@@ -93,6 +94,13 @@ int handleEvents(bool *shouldClose, camera * cam, Uint32 * buttonsHeld)
 			case SDL_QUIT:
 				(*shouldClose) = true;
 				return eventCount;
+			case SDL_WINDOWEVENT_RESIZED:
+			{
+				int ww,wh;
+				SDL_GetWindowSize(w,&ww,&wh);
+				glViewport(0,0,ww,wh);
+				break;
+			}
 			case SDL_KEYDOWN:
 				switch(event.key.keysym.scancode)
 				{
