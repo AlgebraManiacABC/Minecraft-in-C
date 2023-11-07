@@ -3,22 +3,39 @@
 #include "game.h"
 #include "main.h"
 
-camera initCamera()
+struct camera
 {
-	camera cam;
-	cam.ar    = ASPECT_RATIO;
-	cam.x     = 0.0;
-	cam.y     = 0.0;
-	cam.z     = 2.0;
-	cam.pitch = 0.0;
-	cam.yaw   = 0.0;
-	cam.pos[0]= 0.0;
-	cam.pos[1]= 0.0;
-	cam.pos[2]= 2.0;
+	float x;
+	float y;
+	float z;
+	vec3 pos;	// Unused
+	float yaw;	// Yaw in radians (rotation about y axis - 0==2pi is facing -z)
+	float pitch;// Pitch in radians (looking up/down - 0 is along xz-plane ("horizon"); -pi/2 <= pitch <= pi/2)
+	float ar;	// Aspect Ratio
+
+};
+
+camera_t *initCamera()
+{
+	camera_t *cam = malloc(sizeof(camera_t));
+	if(!cam)
+	{
+		setError(ERR_CODE,ERR_NOMEM);
+		return NULL;
+	}
+	cam->ar    = ASPECT_RATIO;
+	cam->x     = 0.0;
+	cam->y     = 0.0;
+	cam->z     = 2.0;
+	cam->pitch = 0.0;
+	cam->yaw   = 0.0;
+	cam->pos[0]= 0.0;
+	cam->pos[1]= 0.0;
+	cam->pos[2]= 2.0;
 	return cam;
 }
 
-int updateCameraAspectRatio(camera * cam)
+int updateCameraAspectRatio(camera_t *cam)
 {
 	if(!cam)
 	{
@@ -29,7 +46,7 @@ int updateCameraAspectRatio(camera * cam)
 	return EXIT_SUCCESS;
 }
 
-int moveCamera(camera * cam, Uint32 cameraBitfield)
+int moveCamera(camera_t *cam, Uint32 cameraBitfield)
 {
 	if(!cam)
 	{
@@ -107,22 +124,22 @@ int moveCamera(camera * cam, Uint32 cameraBitfield)
 	return EXIT_SUCCESS;
 }
 
-void setMvpMatrix(camera cam, mat4 modelMatrix, mat4 mvpMatrix)
+void setMvpMatrix(camera_t *cam, mat4 modelMatrix, mat4 mvpMatrix)
 {
 	vec3 cameraDirection =
 	{
-		cosf(cam.pitch) * sinf(cam.yaw + glm_rad(180)),
-		sinf(cam.pitch),
-		cosf(cam.pitch) * cosf(cam.yaw + glm_rad(180))
+		cosf(cam->pitch) * sinf(cam->yaw + glm_rad(180)),
+		sinf(cam->pitch),
+		cosf(cam->pitch) * cosf(cam->yaw + glm_rad(180))
 	};
 
 	mat4 viewMatrix;
-	glm_look((vec3){cam.x,cam.y,cam.z},cameraDirection,(vec3){0,1,0},viewMatrix);
+	glm_look((vec3){cam->x,cam->y,cam->z},cameraDirection,(vec3){0,1,0},viewMatrix);
 	mat4 projectionMatrix;
 	float fovy = glm_rad(90);
 	float nearZ = 0.1f;
 	float farZ = 100.0f;
-	glm_perspective(fovy,cam.ar,nearZ,farZ,projectionMatrix);
+	glm_perspective(fovy,cam->ar,nearZ,farZ,projectionMatrix);
 
 	glm_mat4_mul(projectionMatrix,viewMatrix,mvpMatrix);
 	glm_mat4_mul(mvpMatrix,modelMatrix,mvpMatrix);

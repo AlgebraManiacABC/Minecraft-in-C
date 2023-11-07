@@ -4,24 +4,14 @@
 #include <cglm/cglm.h>
 typedef uint32_t Uint32;
 
-typedef struct camera
-{
-	float x;
-	float y;
-	float z;
-	vec3 pos;	// Unused
-	float yaw;	// Yaw in radians (rotation about y axis - 0==2pi is facing -z)
-	float pitch;// Pitch in radians (looking up/down - 0 is along xz-plane ("horizon"); -pi/2 <= pitch <= pi/2)
-	float ar;	// Aspect Ratio
+typedef struct camera camera_t;
 
-}	camera;
+camera_t *initCamera();
 
-camera initCamera();
+int updateCameraAspectRatio(camera_t *cam);
 
-int updateCameraAspectRatio(camera * cam);
+int moveCamera(camera_t *cam, Uint32 buttonsHeld);
 
-int moveCamera(camera * cam, Uint32 buttonsHeld);
-
-void setMvpMatrix(camera cam, mat4 modelMatrix, mat4 mvpMatrix);
+void setMvpMatrix(camera_t *cam, mat4 modelMatrix, mat4 mvpMatrix);
 
 #endif

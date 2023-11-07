@@ -14,7 +14,7 @@ void initRenderer(void);
 
 void toggleWireframe();
 
-void renderCube(GLuint shaderProgram, camera cam, vec3 voxelPosition, GLuint texture, GLint transformMatrixLocation);
+void renderCube(GLuint shaderProgram, camera_t *cam, vec3 voxelPosition, GLuint texture, GLint transformMatrixLocation);
 
 void renderUI();
 

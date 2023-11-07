@@ -50,14 +50,14 @@ void gameLoop()
 		blocks[i][2] = rand()%20-10;
 	}
 	glClearColor((0xab)/255.0, 0x10/255.0, 0xfe/255.0, 1.0);
-	camera cam = initCamera();
+	camera_t *cam = initCamera();
 	Uint32 buttonsHeld = (0b0);
 	bool shouldClose = false;
 	while(!shouldClose)
 	{
-		(void)handleEvents(&shouldClose, &cam, &buttonsHeld);
+		(void)handleEvents(&shouldClose, cam, &buttonsHeld);
 		if(shouldClose) return;
-		moveCamera(&cam,buttonsHeld);
+		moveCamera(cam,buttonsHeld);
 		//char buf[256]={0};
 		//sprintf(buf,"XYZ: { %.2ff, %.2ff, %.2ff } || Yaw: %.2ff | Pitch %.2ff",cam.x,cam.y,cam.z,glm_deg(cam.yaw),glm_deg(cam.pitch));
 		//SDL_SetWindowTitle(w,buf);
@@ -79,7 +79,7 @@ void gameLoop()
 	free(blocks);
 }
 
-int handleEvents(bool *shouldClose, camera * cam, Uint32 * buttonsHeld)
+int handleEvents(bool *shouldClose, camera_t *cam, Uint32 * buttonsHeld)
 {
 	SDL_Event event;
 	Uint32 eventCount = 0;
