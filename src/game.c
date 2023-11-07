@@ -3,13 +3,10 @@
 #include "shaders.h"
 #include "render.h"
 #include "textures.h"
+#include "main.h"
 
-void gameLoop(SDL_Window *w)
+void gameLoop()
 {
-	int ww, wh;
-	SDL_GetWindowSize(w,&ww,&wh);
-	float aspectRatio = ww/(float)wh;
-
 	GLuint shaderProgram = createProgram(4,
 			createShader("../src/shaders/light.frag",GL_FRAGMENT_SHADER),
 			createShader("../src/shaders/texture.frag",GL_FRAGMENT_SHADER),
@@ -53,12 +50,12 @@ void gameLoop(SDL_Window *w)
 		blocks[i][2] = rand()%20-10;
 	}
 	glClearColor((0xab)/255.0, 0x10/255.0, 0xfe/255.0, 1.0);
-	camera cam = initCamera(aspectRatio);
+	camera cam = initCamera();
 	Uint32 buttonsHeld = (0b0);
 	bool shouldClose = false;
 	while(!shouldClose)
 	{
-		(void)handleEvents(w, &shouldClose, &cam, &buttonsHeld);
+		(void)handleEvents(&shouldClose, &cam, &buttonsHeld);
 		if(shouldClose) return;
 		moveCamera(&cam,buttonsHeld);
 		//char buf[256]={0};
@@ -82,7 +79,7 @@ void gameLoop(SDL_Window *w)
 	free(blocks);
 }
 
-int handleEvents(SDL_Window *w, bool *shouldClose, camera * cam, Uint32 * buttonsHeld)
+int handleEvents(bool *shouldClose, camera * cam, Uint32 * buttonsHeld)
 {
 	SDL_Event event;
 	Uint32 eventCount = 0;
@@ -94,13 +91,15 @@ int handleEvents(SDL_Window *w, bool *shouldClose, camera * cam, Uint32 * button
 			case SDL_QUIT:
 				(*shouldClose) = true;
 				return eventCount;
-			case SDL_WINDOWEVENT_RESIZED:
-			{
-				int ww,wh;
-				SDL_GetWindowSize(w,&ww,&wh);
-				glViewport(0,0,ww,wh);
-				break;
-			}
+			case SDL_WINDOWEVENT:
+				if(event.window.event == SDL_WINDOWEVENT_RESIZED)
+				{
+					ww = event.window.data1;
+					wh = event.window.data2;
+					glViewport(0,0,ww,wh);
+					updateCameraAspectRatio(cam);
+					break;
+				}
 			case SDL_KEYDOWN:
 				switch(event.key.keysym.scancode)
 				{

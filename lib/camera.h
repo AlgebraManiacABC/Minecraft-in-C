@@ -16,9 +16,9 @@ typedef struct camera
 
 }	camera;
 
-camera initCamera(float aspectRatio);
+camera initCamera();
 
-int updateCameraAspectRatio(camera * cam, float aspectRatio);
+int updateCameraAspectRatio(camera * cam);
 
 int moveCamera(camera * cam, Uint32 buttonsHeld);
 

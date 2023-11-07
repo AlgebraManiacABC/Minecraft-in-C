@@ -32,9 +32,8 @@ extern vec3 worldUp;
 /**
  * Main game loop.
  * 
- * @param w The `SDL_Window *` created with a gl context
  */
-void gameLoop(SDL_Window *w);
+void gameLoop();
 
 /**
  * Polls all incoming events through SDL
@@ -45,6 +44,6 @@ void gameLoop(SDL_Window *w);
  * 
  * @returns The number of events polled 
  */
-int handleEvents(SDL_Window *w, bool *shouldClose, camera * cam, Uint32 * buttonsHeld);
+int handleEvents(bool *shouldClose, camera * cam, Uint32 * buttonsHeld);
 
 #endif

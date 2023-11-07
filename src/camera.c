@@ -1,11 +1,12 @@
 #include "camera.h"
 #include "debug.h"
 #include "game.h"
+#include "main.h"
 
-camera initCamera(float aspectRatio)
+camera initCamera()
 {
 	camera cam;
-	cam.ar    = aspectRatio;
+	cam.ar    = ASPECT_RATIO;
 	cam.x     = 0.0;
 	cam.y     = 0.0;
 	cam.z     = 2.0;
@@ -17,14 +18,14 @@ camera initCamera(float aspectRatio)
 	return cam;
 }
 
-int updateCameraAspectRatio(camera * cam, float aspectRatio)
+int updateCameraAspectRatio(camera * cam)
 {
 	if(!cam)
 	{
 		setError(ERR_CODE,ERR_NULLP);
 		return EXIT_FAILURE;
 	}
-	cam->ar = aspectRatio;
+	cam->ar = ASPECT_RATIO;
 	return EXIT_SUCCESS;
 }
 
