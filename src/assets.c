@@ -144,3 +144,12 @@ void loadAssets(const char * assetListFilename)
 
 	fclose(assetList);
 }
+
+Uint8 IDof(const char * blockName)
+{
+	for(int i=0; i<numBlocks; i++)
+	{
+		if(!strcmp(blockNames[i],blockName)) return i;
+	}
+	return 0;
+}

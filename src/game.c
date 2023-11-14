@@ -41,7 +41,7 @@ void gameLoop()
 	}
 	initRenderer();
 	stbi_set_flip_vertically_on_load(true);
-	GLuint stone = textureFromFile("../assets/stone.png");
+	GLuint stone = textureFromFile(assetFiles[IDof("Default")]);
 	if(!stone)
 	{
 		fprintf(stderr,"Error getting stone texture: %s\n",getError());
