@@ -4,6 +4,7 @@
 #include "render.h"
 #include "textures.h"
 #include "main.h"
+#include "assets.h"
 
 void gameLoop()
 {
@@ -32,6 +33,12 @@ void gameLoop()
 
 	//GLint textureLocation = glGetUniformLocation(shaderProgram,"tex");
 
+	loadAssets("../assets/asset_list.csv");
+	if(!numBlocks)
+	{
+		fprintf(stderr,"Error getting assets: %s\n",getError());
+		return;
+	}
 	initRenderer();
 	stbi_set_flip_vertically_on_load(true);
 	GLuint stone = textureFromFile("../assets/stone.png");

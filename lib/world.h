@@ -8,14 +8,14 @@ typedef struct block
 {
 	blockID id;
 
-}	block;
+}	block_t;
 
 typedef struct chunk
 {
 
-}	chunk;
+}	chunk_t;
 
 typedef struct world
 {
 	
-}	world;
+}	world_t;
