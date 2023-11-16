@@ -35,15 +35,15 @@ camera_t *initCamera()
 	return cam;
 }
 
-int updateCameraAspectRatio(camera_t *cam)
+float updateCameraAspectRatio(camera_t *cam)
 {
 	if(!cam)
 	{
 		setError(ERR_CODE,ERR_NULLP);
-		return EXIT_FAILURE;
+		return 0.0f;
 	}
 	cam->ar = ASPECT_RATIO;
-	return EXIT_SUCCESS;
+	return ASPECT_RATIO;
 }
 
 int moveCamera(camera_t *cam, Uint32 cameraBitfield)
@@ -124,8 +124,14 @@ int moveCamera(camera_t *cam, Uint32 cameraBitfield)
 	return EXIT_SUCCESS;
 }
 
-void setMvpMatrix(camera_t *cam, mat4 modelMatrix, mat4 mvpMatrix)
+int setMvpMatrix(camera_t *cam, mat4 modelMatrix, mat4 mvpMatrix)
 {
+	if(!cam)
+	{
+		setError(ERR_CODE,ERR_NULLP);
+		return EXIT_FAILURE;
+	}
+
 	vec3 cameraDirection =
 	{
 		cosf(cam->pitch) * sinf(cam->yaw + glm_rad(180)),
@@ -143,4 +149,6 @@ void setMvpMatrix(camera_t *cam, mat4 modelMatrix, mat4 mvpMatrix)
 
 	glm_mat4_mul(projectionMatrix,viewMatrix,mvpMatrix);
 	glm_mat4_mul(mvpMatrix,modelMatrix,mvpMatrix);
+
+	return EXIT_SUCCESS;
 }

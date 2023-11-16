@@ -8,13 +8,6 @@
 #define COMMA_COUNT 2
 #define EXPECTED_FORMAT "ID,NAME,FILE"
 
-//struct blockDB
-//{
-//	Uint32 numBlocks;
-//	const char * blockNames;
-//	const char * assetFiles;
-//};
-
 Uint32 numBlocks = 0;
 char ** blockNames = NULL;
 char ** assetFiles = NULL;
@@ -87,7 +80,6 @@ void loadAssets(const char * assetListFilename)
 		char lineBuffer[1024] = {'\0'};
 		fgets(lineBuffer,1024,assetList);
 		//fscanf(assetList,"%s",lineBuffer);
-		//fprintf(stderr,"%s\n",lineBuffer);
 		lineCount++;
 
 		if(commaCount(lineBuffer) != COMMA_COUNT)

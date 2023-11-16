@@ -42,7 +42,7 @@ void gameLoop();
  * @param cam The camera_t struct, which will be updated depending on movement
  * @param buttonsHeld Uint32 bitfield of any pertinent buttons held (to be sent to moveCamera)
  * 
- * @returns The number of events polled 
+ * @returns The number of events polled, or (-1) if error
  */
 int handleEvents(bool *shouldClose, camera_t *cam, Uint32 * buttonsHeld);
 

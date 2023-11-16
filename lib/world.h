@@ -33,7 +33,15 @@ typedef struct world
 
 extern world_t currentWorld;
 
-//	Generates a simple test world
+//	Generates a simple test world (read: chunk)
 void helloWorld();
 
+/**
+ * Renders the world!
+ * TODO: figure out how to move to render.h/.c
+ * 
+ * @param shaderProgram the shader program to use while rendering (TODO: is this necessary?)
+ * @param cam the camera object, so we can get view matrix (TODO: send in view matrix instead)
+ * @param transformMatrixLocation location of the mvpMatrix variable (TODO: make global?)
+ */
 void renderWorld(GLuint shaderProgram, camera_t *cam, GLint transformMatrixLocation);

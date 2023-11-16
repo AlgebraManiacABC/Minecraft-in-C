@@ -21,9 +21,6 @@ void gameLoop()
 	}
 	glUseProgram(shaderProgram);
 
-	//GLint colorVarLocation = glGetUniformLocation(shaderProgram,"varyingColor");
-	//GLfloat redValue = (sinf(clock()/10000.0)+1)/2.0;
-	//glUniform4f(colorVarLocation,redValue,0.0f,0.0f,0.0f);
 	GLint objectColorLocation = glGetUniformLocation(shaderProgram,"objectColor");
 	glUniform3f(objectColorLocation, 1.0f, 0.0f, 0.0f);
 
@@ -31,8 +28,6 @@ void gameLoop()
 
 	GLint modelMatrixLocation = glGetUniformLocation(shaderProgram,"modelMatrix");
 	glUniformMatrix4fv(modelMatrixLocation,1,GL_FALSE,(float*)GLM_MAT4_IDENTITY);
-
-	//GLint textureLocation = glGetUniformLocation(shaderProgram,"tex");
 
 	loadAssets("../assets/asset_list.csv");
 	if(!numBlocks)
@@ -48,7 +43,11 @@ void gameLoop()
 	bool shouldClose = false;
 	while(!shouldClose)
 	{
-		(void)handleEvents(&shouldClose, cam, &buttonsHeld);
+		if(handleEvents(&shouldClose, cam, &buttonsHeld) < 0)
+		{
+			fprintf(stderr,"Error while processing events: %s\n",getError());
+			return;
+		}
 		if(shouldClose) return;
 		moveCamera(cam,buttonsHeld);
 		//char buf[256]={0};
@@ -56,9 +55,6 @@ void gameLoop()
 		//SDL_SetWindowTitle(w,buf);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		//redValue = (sinf(clock()/10000.0)+1)/2.0;
-		//glUniform4f(colorVarLocation,redValue,0.0f,0.0f,0.0f);
 
 		renderWorld(shaderProgram,cam,transformMatrixLocation);
 		renderUI();
@@ -85,7 +81,7 @@ int handleEvents(bool *shouldClose, camera_t *cam, Uint32 * buttonsHeld)
 					ww = event.window.data1;
 					wh = event.window.data2;
 					glViewport(0,0,ww,wh);
-					updateCameraAspectRatio(cam);
+					if(!updateCameraAspectRatio(cam)) return -1;
 					break;
 				}
 			case SDL_KEYDOWN:
