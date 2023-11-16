@@ -2,65 +2,24 @@
 #include "debug.h"
 #include "shaders.h"
 #include "render.h"
+#include "textures.h"
+#include "main.h"
+#include "assets.h"
+#include "world.h"
 
-void gameLoop(SDL_Window *w)
+void gameLoop()
 {
-	int ww, wh;
-	SDL_GetWindowSize(w,&ww,&wh);
-	float aspectRatio = ww/wh;
-
-	GLuint fragmentShader = createShader("../src/shaders/light.frag",GL_FRAGMENT_SHADER);
-	if(!fragmentShader)
-	{
-		fprintf(stderr,"Couldn't create fragmentShader: %s\n",getError());
-		return;
-	}
-	GLuint vertexShader = createShader("../src/shaders/transform.vert",GL_VERTEX_SHADER);
-	if(!vertexShader)
-	{
-		fprintf(stderr,"Couldn't create vertexShader: %s\n",getError());
-		return;
-	}
-	GLuint shaderProgram = createProgram(2,fragmentShader,vertexShader);
+	GLuint shaderProgram = createProgram(4,
+			createShader("../src/shaders/light.frag",GL_FRAGMENT_SHADER),
+			createShader("../src/shaders/texture.frag",GL_FRAGMENT_SHADER),
+			createShader("../src/shaders/main.frag",GL_FRAGMENT_SHADER),
+			createShader("../src/shaders/transform.vert",GL_VERTEX_SHADER));
 	if(!shaderProgram)
 	{
 		fprintf(stderr,"Couldn't create shader program: %s\n",getError());
 		return;
 	}
 	glUseProgram(shaderProgram);
-
-	//================//
-	//For hex use only//
-	//================//
-	float hex_len = 1.0f;
-	GLfloat hex_angles[] = {3.14/2, 3.14/6, -3.14/6, 3*3.14/2, 7*3.14/6, 5*3.14/6};
-	GLfloat hex_vertices[] =
-	{
-		0.0f,				0.0f,				-0.5f,		//	0: 0,0
-		hex_len*cosf(hex_angles[0]), hex_len*sinf(hex_angles[0]), 0.5f,
-		hex_len*cosf(hex_angles[1]), hex_len*sinf(hex_angles[1]), 0.5f,
-		hex_len*cosf(hex_angles[2]), hex_len*sinf(hex_angles[2]), 0.5f,
-		hex_len*cosf(hex_angles[3]), hex_len*sinf(hex_angles[3]), 0.5f,
-		hex_len*cosf(hex_angles[4]), hex_len*sinf(hex_angles[4]), 0.5f,
-		hex_len*cosf(hex_angles[5]), hex_len*sinf(hex_angles[5]), 0.5f,
-		hex_len*cosf(hex_angles[0]), hex_len*sinf(hex_angles[0]), 0.5f
-	};
-	const GLuint hex_indices[] = { 0, 1, 2, 3, 4, 5, 6, 1};
-
-	GLuint hexBuffer;
-	glGenBuffers(1, &hexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER,hexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(hex_vertices), hex_vertices, GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,0,0);
-
-	GLuint hex_ibuffer;
-	glGenBuffers(1, &hex_ibuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,hex_ibuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(hex_indices),hex_indices,GL_STATIC_DRAW);
-	//================//
-
 
 	//GLint colorVarLocation = glGetUniformLocation(shaderProgram,"varyingColor");
 	//GLfloat redValue = (sinf(clock()/10000.0)+1)/2.0;
@@ -70,56 +29,45 @@ void gameLoop(SDL_Window *w)
 
 	GLint transformMatrixLocation = glGetUniformLocation(shaderProgram,"transform");
 
-	//	For hex use only:
-	//mat4 hexModelMatrix = GLM_MAT4_IDENTITY_INIT;
-	//mat4 hexRotationMatrix = GLM_MAT4_IDENTITY_INIT;
-	//
+	GLint modelMatrixLocation = glGetUniformLocation(shaderProgram,"modelMatrix");
+	glUniformMatrix4fv(modelMatrixLocation,1,GL_FALSE,(float*)GLM_MAT4_IDENTITY);
 
-	glClearColor((0xab)/255.0, 0x10/255.0, 0xfe/255.0, 1.0);
-	camera cam = initCamera(aspectRatio);
+	//GLint textureLocation = glGetUniformLocation(shaderProgram,"tex");
+
+	loadAssets("../assets/asset_list.csv");
+	if(!numBlocks)
+	{
+		fprintf(stderr,"Error getting assets: %s\n",getError());
+		return;
+	}
+	initRenderer();
+	helloWorld();
+	glClearColor((0x90)/255.0, 0x90/255.0, 0xfe/255.0, 1.0);
+	camera_t *cam = initCamera();
 	Uint32 buttonsHeld = (0b0);
 	bool shouldClose = false;
 	while(!shouldClose)
 	{
-		(void)handleEvents(&shouldClose, &cam, &buttonsHeld);
+		(void)handleEvents(&shouldClose, cam, &buttonsHeld);
 		if(shouldClose) return;
-		moveCamera(&cam,buttonsHeld);
+		moveCamera(cam,buttonsHeld);
+		//char buf[256]={0};
+		//sprintf(buf,"XYZ: { %.2ff, %.2ff, %.2ff } || Yaw: %.2ff | Pitch %.2ff",cam.x,cam.y,cam.z,glm_deg(cam.yaw),glm_deg(cam.pitch));
+		//SDL_SetWindowTitle(w,buf);
 
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		//redValue = (sinf(clock()/10000.0)+1)/2.0;
 		//glUniform4f(colorVarLocation,redValue,0.0f,0.0f,0.0f);
 
-		//	Rotate hex (hex use only)
-		//glm_rotate_x(hexRotationMatrix,0.1f,hexRotationMatrix);
-		//glm_rotate_y(hexRotationMatrix,0.1f,hexRotationMatrix);
-		//glm_rotate_z(hexRotationMatrix,0.1f,hexRotationMatrix);
-		//glm_mat4_copy(hexRotationMatrix,hexModelMatrix);
-		//
-
-		mat4 mvpMatrix;
-		//	Hex use only:
-		//setMvpMatrix(cam,hexModelMatrix,mvpMatrix);
-		//
-		//	No model transformations:
-		setMvpMatrix(cam,GLM_MAT4_IDENTITY,mvpMatrix);
-
-		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,hex_ibuffer);
-	    //glDrawElements(
-	    //	GL_TRIANGLE_FAN,      // mode
-	    //	8,    // count
-	    //	GL_UNSIGNED_INT,   // type
-	    //	(void*)0           // element array buffer offset
-	    //);
-
-		renderHex(shaderProgram,cam,mvpMatrix,hexBuffer,transformMatrixLocation);
+		renderWorld(shaderProgram,cam,transformMatrixLocation);
 		renderUI();
 		SDL_GL_SwapWindow(w);
 		SDL_Delay(1000/FPS);
 	}
 }
 
-int handleEvents(bool *shouldClose, camera * cam, Uint32 * buttonsHeld)
+int handleEvents(bool *shouldClose, camera_t *cam, Uint32 * buttonsHeld)
 {
 	SDL_Event event;
 	Uint32 eventCount = 0;
@@ -131,9 +79,21 @@ int handleEvents(bool *shouldClose, camera * cam, Uint32 * buttonsHeld)
 			case SDL_QUIT:
 				(*shouldClose) = true;
 				return eventCount;
+			case SDL_WINDOWEVENT:
+				if(event.window.event == SDL_WINDOWEVENT_RESIZED)
+				{
+					ww = event.window.data1;
+					wh = event.window.data2;
+					glViewport(0,0,ww,wh);
+					updateCameraAspectRatio(cam);
+					break;
+				}
 			case SDL_KEYDOWN:
 				switch(event.key.keysym.scancode)
 				{
+					case SDL_SCANCODE_RETURN:
+						toggleWireframe();
+						break;
 					case SDL_SCANCODE_ESCAPE:
 						(*shouldClose) = true;
 						return eventCount;

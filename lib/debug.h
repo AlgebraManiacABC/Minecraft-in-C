@@ -8,6 +8,9 @@
 #include <stdint.h>
 #include <stdarg.h>
 #include <string.h>
+#include <GL/glew.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_opengl.h>
 typedef uint32_t Uint32;
 
 #define ERR_UNDEF (0)
@@ -43,5 +46,16 @@ void setError(errType type, ...);
  * @returns the error string as a const char *
  */
 const char * getError(void);
+
+void print1dFloatArrayAsTable(float *arr, size_t rows, size_t cols);
+
+void GLAPIENTRY
+MessageCallback( GLenum source,
+                 GLenum type,
+                 GLuint id,
+                 GLenum severity,
+                 GLsizei length,
+                 const GLchar* message,
+                 const void* userParam );
 
 #endif

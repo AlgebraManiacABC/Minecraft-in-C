@@ -12,3 +12,8 @@
 
 #define INITIAL_WINDOW_W (800)
 #define INITIAL_WINDOW_H (640)
+
+extern SDL_Window *w;
+extern int ww;
+extern int wh;
+#define ASPECT_RATIO (ww/(float)wh)

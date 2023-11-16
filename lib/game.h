@@ -32,19 +32,18 @@ extern vec3 worldUp;
 /**
  * Main game loop.
  * 
- * @param w The `SDL_Window *` created with a gl context
  */
-void gameLoop(SDL_Window *w);
+void gameLoop();
 
 /**
  * Polls all incoming events through SDL
  * 
  * @param shouldClose Address to a bool which is set if SDL_QUIT (etc) is received
- * @param cam The camera struct, which will be updated depending on movement
+ * @param cam The camera_t struct, which will be updated depending on movement
  * @param buttonsHeld Uint32 bitfield of any pertinent buttons held (to be sent to moveCamera)
  * 
  * @returns The number of events polled 
  */
-int handleEvents(bool *shouldClose, camera * cam, Uint32 * buttonsHeld);
+int handleEvents(bool *shouldClose, camera_t *cam, Uint32 * buttonsHeld);
 
 #endif

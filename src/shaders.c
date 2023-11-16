@@ -16,7 +16,7 @@ GLuint createShader(const char * shaderFilename, GLenum shaderType)
 		setError(ERR_CODE,ERR_NOMEM);
 		return 0;
 	}
-	fclose(shaderFile);
+	(void)fclose(shaderFile);
 	GLuint shaderID = glCreateShader(shaderType);
 	glShaderSource(shaderID,1,&shaderSource,NULL);
 	glCompileShader(shaderID);
@@ -26,7 +26,7 @@ GLuint createShader(const char * shaderFilename, GLenum shaderType)
 	{
 		char info_log[512]={0};
 		glGetShaderInfoLog(shaderID, 512, NULL, info_log);
-		setError(ERR_MESG,"Shader did not compile: %s\nFor reference, here is the source:\n```\n%s\n```",info_log,shaderSource);
+		setError(ERR_MESG,"Shader \"%s\" did not compile: %s\nFor reference, here is the source:\n```\n%s\n```",shaderFilename,info_log,shaderSource);
 		//free(shaderSource);
 		return 0;
 	}
@@ -42,6 +42,10 @@ GLuint createProgram(size_t shaderCount, ...)
 	for(int i=0; i<shaderCount; i++)
 	{
 		GLuint currentShader = va_arg(args,GLuint);
+		if(!currentShader)
+		{
+			return 0;
+		}
 		glAttachShader(shaderProgram,currentShader);
 	}
 	glLinkProgram(shaderProgram);

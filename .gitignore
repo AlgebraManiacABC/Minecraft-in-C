@@ -4,6 +4,9 @@
 # Test Dirs
 test*
 
+# Paint.NET files
+*.pdn
+
 # Build Dirs
 build
 buildNT

@@ -1,5 +1,6 @@
 #include "window.h"
 #include "debug.h"
+#include "stb_image.h"
 
 //	What functions needed?
 //
@@ -30,6 +31,7 @@ int initWindow(Uint32 SDL_initFlags,
 		return EXIT_FAILURE;
 	}
 
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	(*glContext) = SDL_GL_CreateContext(*w);
 	if(!(*glContext))
 	{
@@ -48,6 +50,10 @@ int initWindow(Uint32 SDL_initFlags,
 		SDL_Quit();
 		return EXIT_FAILURE;
 	}
+	glEnable(GL_DEBUG_OUTPUT);
+	glDebugMessageCallback(MessageCallback,0);
+
+	stbi_set_flip_vertically_on_load(true);
 
 	return EXIT_SUCCESS;
 }
