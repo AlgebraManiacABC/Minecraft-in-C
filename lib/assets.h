@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <GL/glew.h>
 #include <SDL2/SDL.h>
 
 //typedef struct blockDB blockDB_t;
@@ -6,6 +7,7 @@
 extern Uint32 numBlocks;
 extern char ** blockNames;
 extern char ** assetFiles;
+extern GLuint * blockTextures;
 
 void loadAssets(const char * assetListFilename);
 

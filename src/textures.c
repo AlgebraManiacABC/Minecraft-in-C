@@ -2,15 +2,6 @@
 #include "textures.h"
 #include "debug.h"
 
-struct blockTexture
-{
-	//	Whether it has rotation (can be placed in varying directions, like glazed terracotta) or not (like pumpkins)
-	//	Decides whether faces uses NorthSouthEastWest(false)/FarNearLeftRight(true)
-	bool rotatable;
-	//	Top, Bottom, North/Far, South/Near, East/Left, West/Right
-	GLuint faces[6];
-};
-
 GLuint textureFromFile(const char * filename)
 {
 	int width, height;

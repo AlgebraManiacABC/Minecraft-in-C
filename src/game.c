@@ -5,6 +5,7 @@
 #include "textures.h"
 #include "main.h"
 #include "assets.h"
+#include "world.h"
 
 void gameLoop()
 {
@@ -40,23 +41,8 @@ void gameLoop()
 		return;
 	}
 	initRenderer();
-	stbi_set_flip_vertically_on_load(true);
-	GLuint stone = textureFromFile(assetFiles[IDof("Default")]);
-	if(!stone)
-	{
-		fprintf(stderr,"Error getting stone texture: %s\n",getError());
-		return;
-	}
-	int blockCount = 100;
-	vec3 *blocks = malloc(sizeof(vec3)*blockCount);
-	srand((Uint64)gameLoop + time(NULL));
-	for(int i=0; i<blockCount; i++)
-	{
-		blocks[i][0] = rand()%20-10;
-		blocks[i][1] = rand()%20-10;
-		blocks[i][2] = rand()%20-10;
-	}
-	glClearColor((0xab)/255.0, 0x10/255.0, 0xfe/255.0, 1.0);
+	helloWorld();
+	glClearColor((0x90)/255.0, 0x90/255.0, 0xfe/255.0, 1.0);
 	camera_t *cam = initCamera();
 	Uint32 buttonsHeld = (0b0);
 	bool shouldClose = false;
@@ -74,16 +60,11 @@ void gameLoop()
 		//redValue = (sinf(clock()/10000.0)+1)/2.0;
 		//glUniform4f(colorVarLocation,redValue,0.0f,0.0f,0.0f);
 
-		renderCube(shaderProgram,cam,(vec3){0,0,0},stone,transformMatrixLocation);
-		for(int i=0; i<blockCount; i++)
-		{
-			renderCube(shaderProgram,cam,blocks[i],stone,transformMatrixLocation);
-		}
+		renderWorld(shaderProgram,cam,transformMatrixLocation);
 		renderUI();
 		SDL_GL_SwapWindow(w);
 		SDL_Delay(1000/FPS);
 	}
-	free(blocks);
 }
 
 int handleEvents(bool *shouldClose, camera_t *cam, Uint32 * buttonsHeld)

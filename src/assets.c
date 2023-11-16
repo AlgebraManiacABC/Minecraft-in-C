@@ -2,6 +2,7 @@
 #include "debug.h"
 #include <string.h>
 #include <ctype.h>
+#include "textures.h"
 
 //	Should have [ID,NAME,FILE] (only 2 commas)
 #define COMMA_COUNT 2
@@ -17,6 +18,7 @@
 Uint32 numBlocks = 0;
 char ** blockNames = NULL;
 char ** assetFiles = NULL;
+GLuint * blockTextures = NULL;
 
 int commaCount(const char * line)
 {
@@ -39,10 +41,10 @@ void strncpyButIgnoreChars(char *__restrict__ dest, const char *__restrict__ sou
 	char * newSource = malloc(sizeof(char)*(maxlen+1));
 	size_t ignorables = strlen(toIgnore);
 	size_t removed = 0;
-	for(int i=0, j=0; source[i] && i < maxlen; i++)
+	for(size_t i=0, j=0; source[i] && i < maxlen; i++)
 	{
 		bool include = true;
-		for(int c=0; c<ignorables; c++)
+		for(size_t c=0; c<ignorables; c++)
 		{
 			if(strchr(source+i,toIgnore[c]) == source+i)
 			{
@@ -55,6 +57,18 @@ void strncpyButIgnoreChars(char *__restrict__ dest, const char *__restrict__ sou
 	}
 	strncpy(dest,newSource,maxlen-removed);
 	free(newSource);
+}
+
+int loadBlockTextures()
+{
+	blockTextures = calloc(numBlocks,sizeof(GLuint));
+	if(!blockTextures) return EXIT_FAILURE;
+	for(int i=0; i<numBlocks; i++)
+	{
+		blockTextures[i] = textureFromFile(assetFiles[i]);
+		if(!blockTextures[i]) return EXIT_FAILURE;
+	}
+	return EXIT_SUCCESS;
 }
 
 void loadAssets(const char * assetListFilename)
@@ -72,6 +86,7 @@ void loadAssets(const char * assetListFilename)
 	{
 		char lineBuffer[1024] = {'\0'};
 		fgets(lineBuffer,1024,assetList);
+		//fscanf(assetList,"%s",lineBuffer);
 		//fprintf(stderr,"%s\n",lineBuffer);
 		lineCount++;
 
@@ -104,7 +119,7 @@ void loadAssets(const char * assetListFilename)
 			{
 				case 0:
 				//	First value: ID (Uint8)
-					currentID = atoi(oldLatter);
+					currentID = atol(oldLatter);
 					if(currentID < 0)
 					{
 						setError(ERR_MESG,"Negative block ID at line %d of asset list \"%s\"!",lineCount,assetListFilename);
@@ -143,6 +158,12 @@ void loadAssets(const char * assetListFilename)
 	}
 
 	fclose(assetList);
+
+	if(loadBlockTextures())
+	{
+		numBlocks = 0;
+		return;
+	}
 }
 
 Uint8 IDof(const char * blockName)

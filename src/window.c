@@ -1,5 +1,6 @@
 #include "window.h"
 #include "debug.h"
+#include "stb_image.h"
 
 //	What functions needed?
 //
@@ -51,6 +52,8 @@ int initWindow(Uint32 SDL_initFlags,
 	}
 	glEnable(GL_DEBUG_OUTPUT);
 	glDebugMessageCallback(MessageCallback,0);
+
+	stbi_set_flip_vertically_on_load(true);
 
 	return EXIT_SUCCESS;
 }

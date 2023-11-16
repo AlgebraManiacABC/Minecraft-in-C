@@ -35,4 +35,4 @@ else()
 endif()
 
 target_link_libraries(${PROJECT_NAME} m)
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Werror -std=c11 -lm)
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Werror -lm)
