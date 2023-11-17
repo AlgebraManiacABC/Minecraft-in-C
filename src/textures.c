@@ -1,6 +1,5 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "textures.h"
-#include "debug.h"
 
 #define MAX(a,b) ((a)>(b)?(a):(b))
 
@@ -12,7 +11,7 @@ GLuint textureFromFile(const char * filename)
 	unsigned char * data = stbi_load(filename,&width,&height,&numChannels,4);
 	if(!data)
 	{
-		setError(ERR_MESG,"Error retrieving data from \"%s\"!",filename);
+		setError(ERR_MESG,"Error retrieving data from \"%s\": %s",filename,stbi_failure_reason());
 		return 0;
 	}
 	if(numChannels != 4)

@@ -2,6 +2,7 @@
 #define CAMERA_H
 
 #include <cglm/cglm.h>
+#include "debug.h"
 typedef uint32_t Uint32;
 
 #define X 0
@@ -10,6 +11,7 @@ typedef uint32_t Uint32;
 
 typedef struct camera camera_t;
 
+NODISCARD
 /**
  * Creates a camera object, sets initial position, and hands it to the user 
  * 
@@ -17,6 +19,7 @@ typedef struct camera camera_t;
  */
 camera_t *initCamera();
 
+NODISCARD
 /**
  * Using the current window width and height, updates the camera's aspect ratio
  * 
@@ -25,6 +28,7 @@ camera_t *initCamera();
  */
 float updateCameraAspectRatio(camera_t *cam);
 
+NODISCARD
 /**
  * According to the currently held buttons, moves the camera a set distance per call (using UPF == "Units per frame")
  * 
@@ -34,6 +38,7 @@ float updateCameraAspectRatio(camera_t *cam);
  */
 int moveCamera(camera_t *cam, Uint32 buttonsHeld);
 
+NODISCARD
 /**
  * Sets the modelViewProjection Matrix according to the camera and model matrix
  * 
@@ -44,6 +49,7 @@ int moveCamera(camera_t *cam, Uint32 buttonsHeld);
  */
 int setMvpMatrix(camera_t *cam, mat4 modelMatrix, mat4 mvpMatrix);
 
+NODISCARD
 /**
  * Sets the viewProjection / projectionView matrix according to the camera's information
  * 

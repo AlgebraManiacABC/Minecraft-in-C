@@ -54,7 +54,11 @@ void gameLoop()
 			return;
 		}
 		if(shouldClose) return;
-		moveCamera(cam,buttonsHeld);
+		if(moveCamera(cam,buttonsHeld))
+		{
+			fprintf(stderr,"Error while moving camera: %s\n",getError());
+			return;
+		}
 		if(buttonsHeld & SHADER_RELOAD_REQUESTED)
 		{
 			GLuint tempProgram = reloadShaders();

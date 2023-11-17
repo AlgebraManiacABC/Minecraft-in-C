@@ -4,7 +4,9 @@
 #include "stb_image.h"
 #include <GL/glew.h>
 #include <cglm/cglm.h>
+#include "debug.h"
 
+NODISCARD
 /**
  * Loads the image found at the filename and stores it in a GLuint
  * 

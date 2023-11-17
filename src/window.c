@@ -1,5 +1,4 @@
 #include "window.h"
-#include "debug.h"
 #include "stb_image.h"
 
 //	What functions needed?

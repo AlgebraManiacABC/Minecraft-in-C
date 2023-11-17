@@ -1,5 +1,4 @@
 #include "shaders.h"
-#include "debug.h"
 
 GLint vpMatLocus = 0;
 GLint mMatLocus = 0;
@@ -15,11 +14,7 @@ GLuint createShaderProgram(size_t shaderCount, ...)
 	va_list args;
 	va_start(args, shaderCount);
 	GLuint * shaders = calloc(shaderCount, sizeof(GLuint));
-	if(!shaders)
-	{
-		setError(ERR_CODE,ERR_NOMEM);
-		return 0;
-	}
+	if(!shaders) ERR_NOMEM_RET_ZERO;
 	GLint success;
 	for(int i=0; i<shaderCount; i++)
 	{
@@ -48,17 +43,9 @@ GLuint createShader(const char * shaderFilename, GLenum shaderType)
 {
 	const char * shaderSource = NULL;
 	FILE * shaderFile = fopen(shaderFilename,"r");
-	if(!shaderFile)
-	{
-		setError(ERR_CODE,ERR_NOFIL);
-		return 0;
-	}
+	if(!shaderFile) ERR_NOFIL_RET_ZERO;
 	fscanf(shaderFile,"%m[^\xff]",&shaderSource);
-	if(!shaderSource)
-	{
-		setError(ERR_CODE,ERR_NOMEM);
-		return 0;
-	}
+	if(!shaderSource) ERR_NOMEM_RET_ZERO;
 	(void)fclose(shaderFile);
 	GLuint shaderID = glCreateShader(shaderType);
 	glShaderSource(shaderID,1,&shaderSource,NULL);

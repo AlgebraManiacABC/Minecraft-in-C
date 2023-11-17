@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
+#include "debug.h"
 
 //typedef struct blockDB blockDB_t;
 
@@ -11,6 +12,7 @@ extern GLuint * blockTextures;
 
 void loadAssets(const char * assetListFilename);
 
+NODISCARD
 /**
  * Returns the ID of the given block name, or UINT8_MAX if not found.
  * 

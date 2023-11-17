@@ -6,10 +6,12 @@
 #include <GL/glew.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#include "debug.h"
 
 extern GLint vpMatLocus;
 extern GLint mMatLocus;
 
+NODISCARD
 /**
  * Given a number of shader source files and their types, links them to a shader program
  * 
@@ -19,6 +21,7 @@ extern GLint mMatLocus;
  */
 GLuint createShaderProgram(size_t shaderCount, ...);
 
+NODISCARD
 /**
  * From a shader file, compiles the shader and returns a GLuint
  * 
@@ -28,6 +31,7 @@ GLuint createShaderProgram(size_t shaderCount, ...);
  */
 GLuint createShader(const char * shaderFilename, GLenum shaderType);
 
+NODISCARD
 /**
  * Given a number of shaders, links them into a shader program
  * 

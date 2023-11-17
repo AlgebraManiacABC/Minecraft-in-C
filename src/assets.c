@@ -1,5 +1,4 @@
 #include "assets.h"
-#include "debug.h"
 #include <string.h>
 #include <ctype.h>
 #include "textures.h"
@@ -13,6 +12,7 @@ char ** blockNames = NULL;
 char ** assetFiles = NULL;
 GLuint * blockTextures = NULL;
 
+NODISCARD
 int commaCount(const char * line)
 {
 	int occ = 0;
@@ -21,6 +21,7 @@ int commaCount(const char * line)
 	return occ;
 }
 
+NODISCARD
 char * strchrOrEOL(char * line, char c)
 {
 	char * ret = strchr(line,c);
@@ -52,6 +53,7 @@ void strncpyButIgnoreChars(char *__restrict__ dest, const char *__restrict__ sou
 	free(newSource);
 }
 
+NODISCARD
 int loadBlockTextures()
 {
 	blockTextures = calloc(numBlocks,sizeof(GLuint));
@@ -67,19 +69,17 @@ int loadBlockTextures()
 void loadAssets(const char * assetListFilename)
 {
 	FILE * assetList = fopen(assetListFilename,"r");
-	if(!assetList)
-	{
-		setError(ERR_CODE,ERR_NOFIL);
-		return;
-	}
+	if(!assetList) ERR_NOFIL_RETURN;
 
 	int lineCount = 0;
 	size_t maxBlockID = 0;
 	while(!feof(assetList))
 	{
+		//char *lineBuffer = NULL;
 		char lineBuffer[1024] = {'\0'};
 		fgets(lineBuffer,1024,assetList);
-		//fscanf(assetList,"%s",lineBuffer);
+		//fscanf(assetList," %m[^\n\r] ",&lineBuffer);
+		//fprintf(stderr,"lineBuffer: [%s]\n",lineBuffer);
 		lineCount++;
 
 		if(commaCount(lineBuffer) != COMMA_COUNT)
@@ -147,6 +147,8 @@ void loadAssets(const char * assetListFilename)
 					break;
 			}
 		}
+
+		//free(lineBuffer);
 	}
 
 	fclose(assetList);
@@ -158,6 +160,7 @@ void loadAssets(const char * assetListFilename)
 	}
 }
 
+NODISCARD
 Uint8 IDof(const char * blockName)
 {
 	for(int i=0; i<numBlocks; i++)

@@ -67,7 +67,7 @@ void renderCube(GLuint shaderProgram, camera_t *cam, vec3 voxelPosition, GLuint 
 	glUniformMatrix4fv(mMatLocus,1,GL_FALSE,(GLfloat*)modelMatrix);
 
 	mat4 vpMatrix;
-	setVpMatrix(cam,vpMatrix);
+	if(setVpMatrix(cam,vpMatrix)) return;
 	glUniformMatrix4fv(vpMatLocus,1,GL_FALSE,(GLfloat*)vpMatrix);
 
 	glDrawElements(GL_TRIANGLES,36,GL_UNSIGNED_INT,NULL);
@@ -88,7 +88,7 @@ void renderRotatedCube(camera_t *cam, vec3 voxelPosition, GLuint texture, vec3 r
 	glBindVertexArray(cubeVertexArray);
 
 	mat4 vpMatrix;
-	setVpMatrix(cam,vpMatrix);
+	if(setVpMatrix(cam,vpMatrix)) return;
 	glUniformMatrix4fv(vpMatLocus,1,GL_FALSE,(GLfloat*)vpMatrix);
 
 	glDrawElements(GL_TRIANGLES,36,GL_UNSIGNED_INT,NULL);

@@ -1,5 +1,4 @@
 #include "camera.h"
-#include "debug.h"
 #include "game.h"
 #include "main.h"
 
@@ -17,14 +16,11 @@ struct camera
 	mat4 projMatrix;	// The projection Matrix (of MVP acclaim)
 };
 
+NODISCARD
 camera_t *initCamera()
 {
 	camera_t *cam = malloc(sizeof(camera_t));
-	if(!cam)
-	{
-		setError(ERR_CODE,ERR_NOMEM);
-		return NULL;
-	}
+	if(!cam) ERR_NOMEM_RET_NULL;
 	cam->ar    = ASPECT_RATIO;
 	cam->pitch = 0.0;
 	cam->yaw   = 0.0;
@@ -42,13 +38,10 @@ camera_t *initCamera()
 	return cam;
 }
 
+NODISCARD
 float updateCameraAspectRatio(camera_t *cam)
 {
-	if(!cam)
-	{
-		setError(ERR_CODE,ERR_NULLP);
-		return 0.0f;
-	}
+	if(!cam) ERR_NULLP_RET_ZERO;
 	cam->ar = ASPECT_RATIO;
 	glm_perspective(cam->fovy,cam->ar,cam->nearZ,cam->farZ,cam->projMatrix);
 	return ASPECT_RATIO;
@@ -62,14 +55,10 @@ void recalculateCameraDirection(camera_t *cam)
 	cam->dir[2] = cosf(cam->pitch) * cosf(cam->yaw + glm_rad(180));
 }
 
+NODISCARD
 int moveCamera(camera_t *cam, Uint32 cameraBitfield)
 {
-	if(!cam)
-	{
-		setError(ERR_CODE,ERR_NULLP);
-		return EXIT_FAILURE;
-	}
-
+	if(!cam) ERR_NULLP_RET_FAIL;
 	bool changedPitchYaw = false;
 
 	if((cameraBitfield & CAMERA_MOVE_LEFT) && !(cameraBitfield & CAMERA_MOVE_RIGHT))
@@ -151,13 +140,10 @@ int moveCamera(camera_t *cam, Uint32 cameraBitfield)
 	return EXIT_SUCCESS;
 }
 
+NODISCARD
 int setMvpMatrix(camera_t *cam, mat4 modelMatrix, mat4 mvpMatrix)
 {
-	if(!cam)
-	{
-		setError(ERR_CODE,ERR_NULLP);
-		return EXIT_FAILURE;
-	}
+	if(!cam) ERR_NULLP_RET_FAIL;
 
 	glm_mat4_mul(cam->projMatrix,cam->viewMatrix,mvpMatrix);
 	glm_mat4_mul(mvpMatrix,modelMatrix,mvpMatrix);
@@ -165,13 +151,10 @@ int setMvpMatrix(camera_t *cam, mat4 modelMatrix, mat4 mvpMatrix)
 	return EXIT_SUCCESS;
 }
 
+NODISCARD
 int setVpMatrix(camera_t *cam, mat4 vpMatrix)
 {
-	if(!cam)
-	{
-		setError(ERR_CODE,ERR_NULLP);
-		return EXIT_FAILURE;
-	}
+	if(!cam) ERR_NULLP_RET_FAIL;
 
 	glm_mat4_mul(cam->projMatrix,cam->viewMatrix,vpMatrix);
 	return EXIT_SUCCESS;

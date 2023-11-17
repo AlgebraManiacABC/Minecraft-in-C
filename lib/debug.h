@@ -13,6 +13,8 @@
 #include <SDL2/SDL_opengl.h>
 typedef uint32_t Uint32;
 
+#define NODISCARD [[nodiscard]]
+
 #define ERR_UNDEF (0)
 #define ERR_NOFIL (1)
 #define ERR_SHADE (2)
@@ -22,6 +24,24 @@ typedef uint32_t Uint32;
 typedef bool errType;
 #define ERR_CODE (false)
 #define ERR_MESG (true)
+
+#define ERR_CODE_RETURN_X(code,retVal) { setError(ERR_CODE,code); return (retVal); }
+#define ERR_CODE_RETURN(code) { setError(ERR_CODE,code); return; }
+#define ERR_NULLP_RET_X(x) ERR_CODE_RETURN_X(ERR_NULLP,x)
+#define ERR_NULLP_RET_NULL ERR_NULLP_RET_X(NULL)
+#define ERR_NULLP_RET_FAIL ERR_NULLP_RET_X(EXIT_FAILURE)
+#define ERR_NULLP_RET_ZERO ERR_NULLP_RET_X(0)
+#define ERR_NULLP_RETURN ERR_CODE_RETURN(ERR_NULLP)
+#define ERR_NOFIL_RET_X(x) ERR_CODE_RETURN_X(ERR_NOFIL,x)
+#define ERR_NOFIL_RET_NULL ERR_NOFIL_RET_X(NULL)
+#define ERR_NOFIL_RET_FAIL ERR_NOFIL_RET_X(EXIT_FAILURE)
+#define ERR_NOFIL_RET_ZERO ERR_NOFIL_RET_X(0)
+#define ERR_NOFIL_RETURN ERR_CODE_RETURN(ERR_NOFIL)
+#define ERR_NOMEM_RET_X(x) ERR_CODE_RETURN_X(ERR_NOMEM,x)
+#define ERR_NOMEM_RET_NULL ERR_NOMEM_RET_X(NULL)
+#define ERR_NOMEM_RET_FAIL ERR_NOMEM_RET_X(EXIT_FAILURE)
+#define ERR_NOMEM_RET_ZERO ERR_NOMEM_RET_X(0)
+#define ERR_NOMEM_RETURN ERR_CODE_RETURN(ERR_NOMEM)
 
 extern const char * errorMessages[];
 extern const char * variableError;
@@ -38,6 +58,7 @@ extern Uint32 lastErrorCode;
  */
 void setError(errType type, ...);
 
+NODISCARD
 /**
  * Gets the most current error string set by setError().
  * Please use as soon as an error is detected,

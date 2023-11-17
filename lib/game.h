@@ -38,6 +38,7 @@ extern vec3 worldUp;
  */
 void gameLoop();
 
+NODISCARD
 /**
  * Polls all incoming events through SDL
  * 

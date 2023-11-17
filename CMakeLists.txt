@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.20)
 
 project(minecraft)
 
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD 23)
 
 file(GLOB SOURCES src/*c)
 add_executable(${PROJECT_NAME} ${SOURCES})

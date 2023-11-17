@@ -3,7 +3,9 @@
 
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
+#include "debug.h"
 
+NODISCARD
 /**
  * Initualizes SDL and creates an SDL window with GL context.
  * Additionally initializes glew!
