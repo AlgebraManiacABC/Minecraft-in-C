@@ -1,6 +1,7 @@
 #include "world.h"
 #include "assets.h"
 #include "render.h"
+#include "shaders.h"
 
 world_t currentWorld = NULL;
 
@@ -36,7 +37,7 @@ void helloWorld()
 	}
 }
 
-void renderWorld(GLuint shaderProgram, camera_t *cam, GLint transformMatrixLocation)
+void renderWorld(GLuint shaderProgram, camera_t *cam)
 {
 	for(size_t x=0; x < CHUNK_SIZE_X; x++)
 	{
@@ -47,7 +48,7 @@ void renderWorld(GLuint shaderProgram, camera_t *cam, GLint transformMatrixLocat
 				block_t currentBlock = currentWorld->first.blocks[x][z][y];
 				if(currentBlock.id != 0)
 				{
-					renderCube(shaderProgram,cam,(vec3){x,y,z},blockTextures[currentBlock.id],transformMatrixLocation);
+					renderCube(shaderProgram,cam,(vec3){x,y,z},blockTextures[currentBlock.id]);
 				}
 			}
 		}

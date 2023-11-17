@@ -41,7 +41,6 @@ void helloWorld();
  * TODO: figure out how to move to render.h/.c
  * 
  * @param shaderProgram the shader program to use while rendering (TODO: is this necessary?)
- * @param cam the camera object, so we can get view matrix (TODO: send in view matrix instead)
- * @param transformMatrixLocation location of the mvpMatrix variable (TODO: make global?)
+ * @param cam the camera object, so we can get view matrix
  */
-void renderWorld(GLuint shaderProgram, camera_t *cam, GLint transformMatrixLocation);
+void renderWorld(GLuint shaderProgram, camera_t *cam);

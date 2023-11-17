@@ -1,11 +1,12 @@
 #include "render.h"
 #include "debug.h"
 #include "cube.h"
+#include "shaders.h"
 
-bool isWireframe;
-GLuint cubeVertexArray;
-GLuint cubeElementBuffer;
-GLuint cubeVertexBuffer;
+bool isWireframe = false;
+GLuint cubeVertexArray = 0;
+GLuint cubeElementBuffer = 0;
+GLuint cubeVertexBuffer = 0;
 
 void initRenderer(void)
 {
@@ -56,16 +57,40 @@ void toggleWireframe()
 	}
 }
 
-void renderCube(GLuint shaderProgram, camera_t *cam, vec3 voxelPosition, GLuint texture, GLint transformMatrixLocation)
+void renderCube(GLuint shaderProgram, camera_t *cam, vec3 voxelPosition, GLuint texture)
 {
 	glBindTexture(GL_TEXTURE_2D,texture);
 	glBindVertexArray(cubeVertexArray);
+
 	mat4 modelMatrix = GLM_MAT4_IDENTITY_INIT;
 	glm_translate(modelMatrix,voxelPosition);
-	mat4 mvpMatrix;
-	setMvpMatrix(cam,modelMatrix,mvpMatrix);
-	glUniformMatrix4fv(transformMatrixLocation,1,GL_FALSE,(GLfloat*)mvpMatrix);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,cubeElementBuffer);
+	glUniformMatrix4fv(mMatLocus,1,GL_FALSE,(GLfloat*)modelMatrix);
+
+	mat4 vpMatrix;
+	setVpMatrix(cam,vpMatrix);
+	glUniformMatrix4fv(vpMatLocus,1,GL_FALSE,(GLfloat*)vpMatrix);
+
+	glDrawElements(GL_TRIANGLES,36,GL_UNSIGNED_INT,NULL);
+	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_2D,0);
+}
+
+void renderRotatedCube(camera_t *cam, vec3 voxelPosition, GLuint texture, vec3 rot)
+{
+	mat4 mMatrix = GLM_MAT4_IDENTITY_INIT;
+	glm_translate(mMatrix,voxelPosition);
+	glm_rotate_x(mMatrix,rot[X],mMatrix);
+	glm_rotate_y(mMatrix,rot[Y],mMatrix);
+	glm_rotate_z(mMatrix,rot[Z],mMatrix);
+	glUniformMatrix4fv(mMatLocus,1,GL_FALSE,(GLfloat*)mMatrix);
+
+	glBindTexture(GL_TEXTURE_2D,texture);
+	glBindVertexArray(cubeVertexArray);
+
+	mat4 vpMatrix;
+	setVpMatrix(cam,vpMatrix);
+	glUniformMatrix4fv(vpMatLocus,1,GL_FALSE,(GLfloat*)vpMatrix);
+
 	glDrawElements(GL_TRIANGLES,36,GL_UNSIGNED_INT,NULL);
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D,0);

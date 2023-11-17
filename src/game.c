@@ -7,27 +7,30 @@
 #include "assets.h"
 #include "world.h"
 
-void gameLoop()
+vec3 worldUp = {0,1,0};
+
+GLuint reloadShaders()
 {
-	GLuint shaderProgram = createProgram(4,
-			createShader("../src/shaders/light.frag",GL_FRAGMENT_SHADER),
-			createShader("../src/shaders/texture.frag",GL_FRAGMENT_SHADER),
-			createShader("../src/shaders/main.frag",GL_FRAGMENT_SHADER),
-			createShader("../src/shaders/transform.vert",GL_VERTEX_SHADER));
-	if(!shaderProgram)
-	{
-		fprintf(stderr,"Couldn't create shader program: %s\n",getError());
-		return;
-	}
+	GLuint shaderProgram = createShaderProgram(2,
+			"../src/shaders/main.frag",GL_FRAGMENT_SHADER,
+			"../src/shaders/transform.vert",GL_VERTEX_SHADER);
+	if(!shaderProgram) return 0;
 	glUseProgram(shaderProgram);
 
-	GLint objectColorLocation = glGetUniformLocation(shaderProgram,"objectColor");
-	glUniform3f(objectColorLocation, 1.0f, 0.0f, 0.0f);
+	vpMatLocus = glGetUniformLocation(shaderProgram,"vpMatrix");
+	mMatLocus = glGetUniformLocation(shaderProgram,"modelMatrix");
+	glUniformMatrix4fv(mMatLocus,1,GL_FALSE,(float*)GLM_MAT4_IDENTITY);
+	return shaderProgram;
+}
 
-	GLint transformMatrixLocation = glGetUniformLocation(shaderProgram,"transform");
-
-	GLint modelMatrixLocation = glGetUniformLocation(shaderProgram,"modelMatrix");
-	glUniformMatrix4fv(modelMatrixLocation,1,GL_FALSE,(float*)GLM_MAT4_IDENTITY);
+void gameLoop()
+{
+	GLuint shaderProgram = reloadShaders();
+	if(!shaderProgram)
+	{
+		fprintf(stderr,"Couldn't load shader program: %s\n",getError());
+		return;
+	}
 
 	loadAssets("../assets/asset_list.csv");
 	if(!numBlocks)
@@ -41,6 +44,8 @@ void gameLoop()
 	camera_t *cam = initCamera();
 	Uint32 buttonsHeld = (0b0);
 	bool shouldClose = false;
+	//	Rotating block variable, for debug:
+	//vec3 rot = {0,0,0};
 	while(!shouldClose)
 	{
 		if(handleEvents(&shouldClose, cam, &buttonsHeld) < 0)
@@ -50,13 +55,31 @@ void gameLoop()
 		}
 		if(shouldClose) return;
 		moveCamera(cam,buttonsHeld);
+		if(buttonsHeld & SHADER_RELOAD_REQUESTED)
+		{
+			GLuint tempProgram = reloadShaders();
+			if(!tempProgram)
+			{
+				fprintf(stderr,"Couldn't reload shaders: %s\n",getError());
+			}
+			else
+			{
+				shaderProgram = tempProgram;
+				buttonsHeld &= ~SHADER_RELOAD_REQUESTED;
+			}
+		}
 		//char buf[256]={0};
 		//sprintf(buf,"XYZ: { %.2ff, %.2ff, %.2ff } || Yaw: %.2ff | Pitch %.2ff",cam.x,cam.y,cam.z,glm_deg(cam.yaw),glm_deg(cam.pitch));
 		//SDL_SetWindowTitle(w,buf);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		renderWorld(shaderProgram,cam,transformMatrixLocation);
+		// Rotating block functions, for debug:
+		//rot[X] += 0.01f;
+		//rot[Y] += 0.01f;
+		//rot[Z] += 0.01f;
+		//renderRotatedCube(cam,(vec3){-1,-1,-1},blockTextures[IDof("Grass")],rot);
+		renderWorld(shaderProgram,cam);
 		renderUI();
 		SDL_GL_SwapWindow(w);
 		SDL_Delay(1000/FPS);
@@ -122,6 +145,9 @@ int handleEvents(bool *shouldClose, camera_t *cam, Uint32 * buttonsHeld)
 						break;
 					case SDL_SCANCODE_DOWN:
 						(*buttonsHeld) |= CAMERA_PITCH_DOWN;
+						break;
+					case SDL_SCANCODE_H:
+						(*buttonsHeld) |= SHADER_RELOAD_REQUESTED;
 						break;
 					default:
 						break;

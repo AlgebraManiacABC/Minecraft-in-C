@@ -12,20 +12,23 @@
 #include <time.h>
 #include "camera.h"
 
-#define CAMERA_MOVE_LEFT     (0b0000000001)
-#define CAMERA_MOVE_RIGHT    (0b0000000010)
-#define CAMERA_MOVE_FORWARD  (0b0000000100)
-#define CAMERA_MOVE_BACKWARD (0b0000001000)
-#define CAMERA_MOVE_UP       (0b0000010000)
-#define CAMERA_MOVE_DOWN     (0b0000100000)
-#define CAMERA_YAW_LEFT      (0b0001000000)
-#define CAMERA_YAW_RIGHT     (0b0010000000)
-#define CAMERA_PITCH_UP      (0b0100000000)
-#define CAMERA_PITCH_DOWN    (0b1000000000)
+#define CAMERA_MOVE_LEFT        (0b00000000001)
+#define CAMERA_MOVE_RIGHT       (0b00000000010)
+#define CAMERA_MOVE_FORWARD     (0b00000000100)
+#define CAMERA_MOVE_BACKWARD    (0b00000001000)
+#define CAMERA_MOVE_UP          (0b00000010000)
+#define CAMERA_MOVE_DOWN        (0b00000100000)
+#define CAMERA_YAW_LEFT         (0b00001000000)
+#define CAMERA_YAW_RIGHT        (0b00010000000)
+#define CAMERA_PITCH_UP         (0b00100000000)
+#define CAMERA_PITCH_DOWN       (0b01000000000)
+#define SHADER_RELOAD_REQUESTED (0b10000000000)
 
 #define FPS (60.0f)
-#define CAM_UPS (1.0f)	//	Units per second
+#define CAM_UPS (3.0f)	//	Units per second
+#define CAM_RPS (1.0f)	//	Rotational units per second
 #define CAM_UPF (CAM_UPS/FPS)	//	Units per frame
+#define CAM_RPF (CAM_RPS/FPS)	//	Rotational units per frame
 
 extern vec3 worldUp;
 

@@ -4,6 +4,10 @@
 #include <cglm/cglm.h>
 typedef uint32_t Uint32;
 
+#define X 0
+#define Y 1
+#define Z 2
+
 typedef struct camera camera_t;
 
 /**
@@ -31,12 +35,22 @@ float updateCameraAspectRatio(camera_t *cam);
 int moveCamera(camera_t *cam, Uint32 buttonsHeld);
 
 /**
- * 
+ * Sets the modelViewProjection Matrix according to the camera and model matrix
  * 
  * @param cam 
  * @param modelMatrix 
  * @param mvpMatrix 
+ * @return `EXIT_SUCCESS` on success, `EXIT_FAILURE` on failure
  */
 int setMvpMatrix(camera_t *cam, mat4 modelMatrix, mat4 mvpMatrix);
+
+/**
+ * Sets the viewProjection / projectionView matrix according to the camera's information
+ * 
+ * @param cam 
+ * @param vpMatrix 
+ * @return `EXIT_SUCCESS` on success, `EXIT_FAILURE` on failure
+ */
+int setVpMatrix(camera_t *cam, mat4 vpMatrix);
 
 #endif

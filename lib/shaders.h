@@ -7,6 +7,18 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
+extern GLint vpMatLocus;
+extern GLint mMatLocus;
+
+/**
+ * Given a number of shader source files and their types, links them to a shader program
+ * 
+ * @param shaderCount the number of shaders to link
+ * @param ... `shaderCount` pairs of [const char * shaderFilename, GLenum shaderType] used to create each shader
+ * @return a GLuint handle to the shader program, or 0 on failure.
+ */
+GLuint createShaderProgram(size_t shaderCount, ...);
+
 /**
  * From a shader file, compiles the shader and returns a GLuint
  * 
