@@ -17,16 +17,14 @@ struct camera
 };
 
 NODISCARD
-camera_t *initCamera()
+camera_t *initCamera(vec3 pos)
 {
 	camera_t *cam = malloc(sizeof(camera_t));
 	if(!cam) ERR_NOMEM_RET_NULL;
 	cam->ar    = ASPECT_RATIO;
 	cam->pitch = 0.0;
 	cam->yaw   = 0.0;
-	cam->pos[X]= 0.0;
-	cam->pos[Y]= 0.0;
-	cam->pos[Z]= 2.0;
+	glm_vec3_copy(pos,cam->pos);
 	cam->dir[0] = cosf(cam->pitch) * sinf(cam->yaw + glm_rad(180));
 	cam->dir[1] = sinf(cam->pitch);
 	cam->dir[2] = cosf(cam->pitch) * cosf(cam->yaw + glm_rad(180));

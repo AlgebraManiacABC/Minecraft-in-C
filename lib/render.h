@@ -25,12 +25,11 @@ void toggleWireframe();
 /**
  * Renders a single Cube using the global vertex array and other important information 
  * 
- * @param shaderProgram the shader to use while rendering (TODO: remove)
  * @param cam the camera object, for determining view matrix
  * @param voxelPosition the voxel position of the cube (uses the cubeWidth as offset)
  * @param texture the cube's texture
  */
-void renderCube(GLuint shaderProgram, camera_t *cam, vec3 voxelPosition, GLuint texture);
+void renderCube(camera_t *cam, vec3 voxelPosition, GLuint texture);
 
 /**
  * Renders a single (rotated) cube using the global vertex array and other info

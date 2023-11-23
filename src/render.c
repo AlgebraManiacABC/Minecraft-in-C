@@ -57,7 +57,7 @@ void toggleWireframe()
 	}
 }
 
-void renderCube(GLuint shaderProgram, camera_t *cam, vec3 voxelPosition, GLuint texture)
+void renderCube(camera_t *cam, vec3 voxelPosition, GLuint texture)
 {
 	glBindTexture(GL_TEXTURE_2D,texture);
 	glBindVertexArray(cubeVertexArray);

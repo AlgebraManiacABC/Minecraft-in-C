@@ -40,7 +40,6 @@ void helloWorld();
  * Renders the world!
  * TODO: figure out how to move to render.h/.c
  * 
- * @param shaderProgram the shader program to use while rendering (TODO: is this necessary?)
  * @param cam the camera object, so we can get view matrix
  */
-void renderWorld(GLuint shaderProgram, camera_t *cam);
+void renderWorld(camera_t *cam);

@@ -11,6 +11,7 @@
 #include <math.h>
 #include <time.h>
 #include "camera.h"
+#include "player.h"
 
 #define CAMERA_MOVE_LEFT        (0b00000000001)
 #define CAMERA_MOVE_RIGHT       (0b00000000010)
@@ -43,11 +44,11 @@ NODISCARD
  * Polls all incoming events through SDL
  * 
  * @param shouldClose Address to a bool which is set if SDL_QUIT (etc) is received
- * @param cam The camera_t struct, which will be updated depending on movement
+ * @param player the player whose camera's aspect ratio may be updated
  * @param buttonsHeld Uint32 bitfield of any pertinent buttons held (to be sent to moveCamera)
  * 
  * @returns The number of events polled, or (-1) if error
  */
-int handleEvents(bool *shouldClose, camera_t *cam, Uint32 * buttonsHeld);
+int handleEvents(bool *shouldClose, player_t player, Uint32 * buttonsHeld);
 
 #endif

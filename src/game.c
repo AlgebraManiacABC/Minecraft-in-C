@@ -41,20 +41,20 @@ void gameLoop()
 	initRenderer();
 	helloWorld();
 	glClearColor((0x90)/255.0, 0x90/255.0, 0xfe/255.0, 1.0);
-	camera_t *cam = initCamera();
+	player_t player = initPlayer((vec3){CHUNK_SIZE_X/2,SEA_LEVEL,CHUNK_SIZE_Z/2});
 	Uint32 buttonsHeld = (0b0);
 	bool shouldClose = false;
 	//	Rotating block variable, for debug:
 	//vec3 rot = {0,0,0};
 	while(!shouldClose)
 	{
-		if(handleEvents(&shouldClose, cam, &buttonsHeld) < 0)
+		if(handleEvents(&shouldClose, player, &buttonsHeld) < 0)
 		{
 			fprintf(stderr,"Error while processing events: %s\n",getError());
 			return;
 		}
 		if(shouldClose) return;
-		if(moveCamera(cam,buttonsHeld))
+		if(movePlayer(player,buttonsHeld))
 		{
 			fprintf(stderr,"Error while moving camera: %s\n",getError());
 			return;
@@ -83,14 +83,14 @@ void gameLoop()
 		//rot[Y] += 0.01f;
 		//rot[Z] += 0.01f;
 		//renderRotatedCube(cam,(vec3){-1,-1,-1},blockTextures[IDof("Grass")],rot);
-		renderWorld(shaderProgram,cam);
+		playerRenderWorld(player);
 		renderUI();
 		SDL_GL_SwapWindow(w);
 		SDL_Delay(1000/FPS);
 	}
 }
 
-int handleEvents(bool *shouldClose, camera_t *cam, Uint32 * buttonsHeld)
+int handleEvents(bool *shouldClose, player_t player, Uint32 * buttonsHeld)
 {
 	SDL_Event event;
 	Uint32 eventCount = 0;
@@ -108,7 +108,7 @@ int handleEvents(bool *shouldClose, camera_t *cam, Uint32 * buttonsHeld)
 					ww = event.window.data1;
 					wh = event.window.data2;
 					glViewport(0,0,ww,wh);
-					if(!updateCameraAspectRatio(cam)) return -1;
+					if(!playerUpdateCameraAspectRatio(player)) return -1;
 					break;
 				}
 			case SDL_KEYDOWN:

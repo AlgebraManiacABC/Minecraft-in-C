@@ -37,7 +37,7 @@ void helloWorld()
 	}
 }
 
-void renderWorld(GLuint shaderProgram, camera_t *cam)
+void renderWorld(camera_t *cam)
 {
 	for(size_t x=0; x < CHUNK_SIZE_X; x++)
 	{
@@ -48,7 +48,7 @@ void renderWorld(GLuint shaderProgram, camera_t *cam)
 				block_t currentBlock = currentWorld->first.blocks[x][z][y];
 				if(currentBlock.id != 0)
 				{
-					renderCube(shaderProgram,cam,(vec3){x,y,z},blockTextures[currentBlock.id]);
+					renderCube(cam,(vec3){x,y,z},blockTextures[currentBlock.id]);
 				}
 			}
 		}
