@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "events.h"
 #include "game.h"
 #include "main.h"
 

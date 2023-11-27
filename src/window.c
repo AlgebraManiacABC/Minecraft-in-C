@@ -54,5 +54,8 @@ int initWindow(Uint32 SDL_initFlags,
 
 	stbi_set_flip_vertically_on_load(true);
 
+	//SDL_ShowCursor(SDL_DISABLE);
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+
 	return EXIT_SUCCESS;
 }

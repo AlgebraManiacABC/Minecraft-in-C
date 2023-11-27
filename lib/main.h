@@ -13,7 +13,16 @@
 #define INITIAL_WINDOW_W (800)
 #define INITIAL_WINDOW_H (640)
 
+//	The global window object
 extern SDL_Window *w;
+//	The global window width
 extern int ww;
+//	The global window height
 extern int wh;
+//	The aspect ratio of the window, as determined by the global window dimensions
 #define ASPECT_RATIO (ww/(float)wh)
+
+//	The global mouse x position
+extern int mx;
+//	The global mouse y position
+extern int my;

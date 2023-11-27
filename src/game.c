@@ -6,6 +6,7 @@
 #include "main.h"
 #include "assets.h"
 #include "world.h"
+#include "events.h"
 
 vec3 worldUp = {0,1,0};
 
@@ -43,17 +44,19 @@ void gameLoop()
 	glClearColor((0x90)/255.0, 0x90/255.0, 0xfe/255.0, 1.0);
 	player_t player = initPlayer((vec3){CHUNK_SIZE_X/2,SEA_LEVEL,CHUNK_SIZE_Z/2});
 	Uint32 buttonsHeld = (0b0);
+	Uint32 mouseState = (0b0);
 	bool shouldClose = false;
 	//	Rotating block variable, for debug:
 	//vec3 rot = {0,0,0};
 	while(!shouldClose)
 	{
-		if(handleEvents(&shouldClose, player, &buttonsHeld) < 0)
+		if(handleEvents(&shouldClose, player, &buttonsHeld, &mouseState) < 0)
 		{
 			fprintf(stderr,"Error while processing events: %s\n",getError());
 			return;
 		}
 		if(shouldClose) return;
+		SDL_WarpMouseInWindow(w,ww/2,wh/2);
 		if(movePlayer(player,buttonsHeld))
 		{
 			fprintf(stderr,"Error while moving camera: %s\n",getError());
@@ -88,115 +91,4 @@ void gameLoop()
 		SDL_GL_SwapWindow(w);
 		SDL_Delay(1000/FPS);
 	}
-}
-
-int handleEvents(bool *shouldClose, player_t player, Uint32 * buttonsHeld)
-{
-	SDL_Event event;
-	Uint32 eventCount = 0;
-	while(SDL_PollEvent(&event))
-	{
-		eventCount++;
-		switch(event.type)
-		{
-			case SDL_QUIT:
-				(*shouldClose) = true;
-				return eventCount;
-			case SDL_WINDOWEVENT:
-				if(event.window.event == SDL_WINDOWEVENT_RESIZED)
-				{
-					ww = event.window.data1;
-					wh = event.window.data2;
-					glViewport(0,0,ww,wh);
-					if(!playerUpdateCameraAspectRatio(player)) return -1;
-					break;
-				}
-			case SDL_KEYDOWN:
-				switch(event.key.keysym.scancode)
-				{
-					case SDL_SCANCODE_RETURN:
-						toggleWireframe();
-						break;
-					case SDL_SCANCODE_ESCAPE:
-						(*shouldClose) = true;
-						return eventCount;
-					case SDL_SCANCODE_W:
-						(*buttonsHeld) |= CAMERA_MOVE_FORWARD;
-						break;
-					case SDL_SCANCODE_A:
-						(*buttonsHeld) |= CAMERA_MOVE_LEFT;
-						break;
-					case SDL_SCANCODE_S:
-						(*buttonsHeld) |= CAMERA_MOVE_BACKWARD;
-						break;
-					case SDL_SCANCODE_D:
-						(*buttonsHeld) |= CAMERA_MOVE_RIGHT;
-						break;
-					case SDL_SCANCODE_LSHIFT:
-						(*buttonsHeld) |= CAMERA_MOVE_DOWN;
-						break;
-					case SDL_SCANCODE_SPACE:
-						(*buttonsHeld) |= CAMERA_MOVE_UP;
-						break;
-					case SDL_SCANCODE_LEFT:
-						(*buttonsHeld) |= CAMERA_YAW_LEFT;
-						break;
-					case SDL_SCANCODE_RIGHT:
-						(*buttonsHeld) |= CAMERA_YAW_RIGHT;
-						break;
-					case SDL_SCANCODE_UP:
-						(*buttonsHeld) |= CAMERA_PITCH_UP;
-						break;
-					case SDL_SCANCODE_DOWN:
-						(*buttonsHeld) |= CAMERA_PITCH_DOWN;
-						break;
-					case SDL_SCANCODE_H:
-						(*buttonsHeld) |= SHADER_RELOAD_REQUESTED;
-						break;
-					default:
-						break;
-				}
-				break;
-			case SDL_KEYUP:
-				switch(event.key.keysym.scancode)
-				{
-					case SDL_SCANCODE_W:
-						(*buttonsHeld) &= ~CAMERA_MOVE_FORWARD;
-						break;
-					case SDL_SCANCODE_A:
-						(*buttonsHeld) &= ~CAMERA_MOVE_LEFT;
-						break;
-					case SDL_SCANCODE_S:
-						(*buttonsHeld) &= ~CAMERA_MOVE_BACKWARD;
-						break;
-					case SDL_SCANCODE_D:
-						(*buttonsHeld) &= ~CAMERA_MOVE_RIGHT;
-						break;
-					case SDL_SCANCODE_LSHIFT:
-						(*buttonsHeld) &= ~CAMERA_MOVE_DOWN;
-						break;
-					case SDL_SCANCODE_SPACE:
-						(*buttonsHeld) &= ~CAMERA_MOVE_UP;
-						break;
-					case SDL_SCANCODE_LEFT:
-						(*buttonsHeld) &= ~CAMERA_YAW_LEFT;
-						break;
-					case SDL_SCANCODE_RIGHT:
-						(*buttonsHeld) &= ~CAMERA_YAW_RIGHT;
-						break;
-					case SDL_SCANCODE_UP:
-						(*buttonsHeld) &= ~CAMERA_PITCH_UP;
-						break;
-					case SDL_SCANCODE_DOWN:
-						(*buttonsHeld) &= ~CAMERA_PITCH_DOWN;
-						break;
-					default:
-						break;
-				}
-				break;
-			default:
-				break;
-		}
-	}
-	return eventCount;
 }

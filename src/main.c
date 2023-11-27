@@ -7,6 +7,8 @@
 SDL_Window *w = NULL;
 int ww = INITIAL_WINDOW_W, wh = INITIAL_WINDOW_H;
 
+int mx, my;
+
 int main(int argc, char *argv[])
 {
 	SDL_GLContext glContext;
@@ -19,6 +21,7 @@ int main(int argc, char *argv[])
 		fprintf(stderr,"Error during intialization: %s\n",getError());
 		return EXIT_FAILURE;
 	}
+	SDL_GetMouseState(&mx,&my);
 
 	gameLoop();
 
