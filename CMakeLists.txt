@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.20)
 project(minecraft)
 
 set(CMAKE_C_STANDARD 23)
+set(CMAKE_BUILD_TYPE Debug)
 
 file(GLOB SOURCES src/*c)
 add_executable(${PROJECT_NAME} ${SOURCES})

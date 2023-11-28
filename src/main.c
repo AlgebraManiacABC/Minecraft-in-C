@@ -3,6 +3,7 @@
 #include "shaders.h"
 #include "debug.h"
 #include "window.h"
+#include "assets.h"
 
 SDL_Window *w = NULL;
 int ww = INITIAL_WINDOW_W, wh = INITIAL_WINDOW_H;
