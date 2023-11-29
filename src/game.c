@@ -56,12 +56,12 @@ void gameLoop()
 			return;
 		}
 		if(shouldClose) return;
-		SDL_WarpMouseInWindow(w,ww/2,wh/2);
 		if(movePlayer(player,buttonsHeld))
 		{
 			fprintf(stderr,"Error while moving camera: %s\n",getError());
 			return;
 		}
+		SDL_WarpMouseInWindow(w,ww/2,wh/2);
 		if(buttonsHeld & SHADER_RELOAD_REQUESTED)
 		{
 			GLuint tempProgram = reloadShaders();

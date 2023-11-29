@@ -56,6 +56,7 @@ int initWindow(Uint32 SDL_initFlags,
 
 	//SDL_ShowCursor(SDL_DISABLE);
 	SDL_SetRelativeMouseMode(SDL_TRUE);
+	SDL_WarpMouseInWindow(*w,win_w/2,win_h/2);
 
 	return EXIT_SUCCESS;
 }

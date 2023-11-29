@@ -31,16 +31,35 @@ float updateCameraAspectRatio(camera_t *cam);
 
 void recalculateCameraViewMatrix(camera_t *cam);
 
-//NODISCARD
-
+NODISCARD
+/**
+ * Changes the camera's pitch by `by` radians
+ *
+ * @param cam the camera to update
+ * @param by the angle in radians to increase pitch by
+ * @return EXIT_SUCCESS (0) on success, EXIT_FAILURE on fail.
+ */
 int changeCameraPitch(camera_t *cam, float by);
 
-//NODISCARD
-
+NODISCARD
+/**
+ * Changes the camera's yaw by `by` radians.
+ *
+ * @param cam the camera to update
+ * @param by the angle in radians to increase yaw by
+ * @return EXIT_SUCCESS (0) on success, EXIT_FAILURE on fail.
+ */
 int changeCameraYaw(camera_t *cam, float by);
 
-//NODISCARD
-
+NODISCARD
+/**
+ * Given a relative X,Y,Z vector, translates the camera according to current direction.
+ * X is horizontal, Z is in/out, Y is up/down
+ *
+ * @param cam the camera to update
+ * @param by the translational coordinates to move the camera by
+ * @return EXIT_SUCCESS (0) on success, EXIT_FAILURE on fail.
+ */
 int relativeTranslateCamera(camera_t *cam, vec3 by);
 
 NODISCARD

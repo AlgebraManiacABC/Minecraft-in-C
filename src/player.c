@@ -5,6 +5,8 @@
 #include "game.h"
 #include "main.h"
 
+#define INITIAL_SENSITIVITY (0.01f)
+
 typedef unsigned int uint;
 
 struct player
@@ -23,6 +25,7 @@ player_t initPlayer(vec3 footPos)
 	glm_vec3_copy(footPos,eyePos);
 	eyePos[Y] += PLAYER_EYE_HEIGHT;
 	player->eyes = initCamera(eyePos);
+	player->sensitivity = INITIAL_SENSITIVITY;
 	return player;
 }
 
@@ -38,62 +41,63 @@ void playerRenderWorld(player_t player)
 
 int movePlayer(player_t player, Uint32 buttonsHeld)
 {
-	//return moveCamera(player->eyes,buttonsHeld);
 	if(!player) ERR_NULLP_RET_FAIL;
 
 	if((buttonsHeld & CAMERA_MOVE_LEFT) && !(buttonsHeld & CAMERA_MOVE_RIGHT))
 	{
-		//	Move camera left
-		relativeTranslateCamera(player->eyes,VEC3(-CAM_UPF,0,0));
+		//	Move player left
+		if(relativeTranslateCamera(player->eyes,VEC3(-CAM_UPF,0,0))) return EXIT_FAILURE;
 	}
 	else if((buttonsHeld & CAMERA_MOVE_RIGHT) && !(buttonsHeld & CAMERA_MOVE_LEFT))
 	{
-		//	Move camera right
-		relativeTranslateCamera(player->eyes,VEC3(CAM_UPF,0,0));
+		//	Move player right
+		if(relativeTranslateCamera(player->eyes,VEC3(CAM_UPF,0,0))) return EXIT_FAILURE;
 	}
 
 	if((buttonsHeld & CAMERA_MOVE_FORWARD) && !(buttonsHeld & CAMERA_MOVE_BACKWARD))
 	{
-		//	Move camera forward
-		relativeTranslateCamera(player->eyes,VEC3(0,0,-CAM_UPF));
+		//	Move player forward
+		if(relativeTranslateCamera(player->eyes,VEC3(0,0,-CAM_UPF))) return EXIT_FAILURE;
 	}
 	else if((buttonsHeld & CAMERA_MOVE_BACKWARD) && !(buttonsHeld & CAMERA_MOVE_FORWARD))
 	{
-		//	Move camera backward
-		relativeTranslateCamera(player->eyes,VEC3(0,0,CAM_UPF));
+		//	Move player backward
+		if(relativeTranslateCamera(player->eyes,VEC3(0,0,CAM_UPF))) return EXIT_FAILURE;
 	}
 
 	if((buttonsHeld & CAMERA_MOVE_UP) && !(buttonsHeld & CAMERA_MOVE_DOWN))
 	{
-		//	Move camera up
-		relativeTranslateCamera(player->eyes,VEC3(0,CAM_UPF,0));
+		//	Move player up
+		if(relativeTranslateCamera(player->eyes,VEC3(0,CAM_UPF,0))) return EXIT_FAILURE;
 	}
 	else if((buttonsHeld & CAMERA_MOVE_DOWN) && !(buttonsHeld & CAMERA_MOVE_UP))
 	{
-		//	Move camera down
-		relativeTranslateCamera(player->eyes,VEC3(0,-CAM_UPF,0));
+		//	Move player down
+		if(relativeTranslateCamera(player->eyes,VEC3(0,-CAM_UPF,0))) return EXIT_FAILURE;
 	}
 
+	//if(changeCameraYaw(player->eyes,(player->sensitivity * mx))) return EXIT_FAILURE;
 	if((buttonsHeld & CAMERA_YAW_LEFT) && !(buttonsHeld & CAMERA_YAW_RIGHT))
 	{
-		//	Turn camera left
-		changeCameraYaw(player->eyes,CAM_RPF);
+		//	Turn player left
+		if(changeCameraYaw(player->eyes,player->sensitivity)) return EXIT_FAILURE;
 	}
 	else if((buttonsHeld & CAMERA_YAW_RIGHT) && !(buttonsHeld & CAMERA_YAW_LEFT))
 	{
-		//	Turn camera right
-		changeCameraYaw(player->eyes,-CAM_RPF);
+		//	Turn player right
+		if(changeCameraYaw(player->eyes,-player->sensitivity)) return EXIT_FAILURE;
 	}
 
+	//if(changeCameraPitch(player->eyes,(player->sensitivity * my))) return EXIT_FAILURE;
 	if((buttonsHeld & CAMERA_PITCH_UP) && !(buttonsHeld & CAMERA_PITCH_DOWN))
 	{
-		//	Angle camera up
-		changeCameraPitch(player->eyes,CAM_RPF);
+		//	Angle player up
+		if(changeCameraPitch(player->eyes,player->sensitivity)) return EXIT_FAILURE;
 	}
 	else if((buttonsHeld & CAMERA_PITCH_DOWN) && !(buttonsHeld & CAMERA_PITCH_UP))
 	{
-		//	Angle camera down
-		changeCameraPitch(player->eyes,-CAM_RPF);
+		//	Angle player down
+		if(changeCameraPitch(player->eyes,-player->sensitivity)) return EXIT_FAILURE;
 	}
 
 	recalculateCameraViewMatrix(player->eyes);
