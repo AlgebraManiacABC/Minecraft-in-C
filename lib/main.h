@@ -10,6 +10,8 @@
 #include <cglm/cglm.h>
 #include <time.h>
 
+#define VEC3(x,y,z) ((vec3){x,y,z})
+
 #define INITIAL_WINDOW_W (800)
 #define INITIAL_WINDOW_H (640)
 

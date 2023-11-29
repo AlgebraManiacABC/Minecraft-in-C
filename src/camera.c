@@ -54,7 +54,56 @@ void recalculateCameraDirection(camera_t *cam)
 	cam->dir[2] = cosf(cam->pitch) * cosf(cam->yaw + glm_rad(180));
 }
 
-NODISCARD
+void recalculateCameraViewMatrix(camera_t *cam)
+{
+	if(!cam) return;
+	recalculateCameraDirection(cam);
+	glm_look(cam->pos,cam->dir,worldUp,cam->viewMatrix);
+}
+
+int changeCameraYaw(camera_t *cam, float by)
+{
+	if(!cam) ERR_NULLP_RET_FAIL;
+	cam->yaw += by;
+	cam->yaw = fmod(cam->yaw,360.0);
+	//recalculateCameraDirection(cam);
+	return EXIT_SUCCESS;
+}
+
+int changeCameraPitch(camera_t *cam, float by)
+{
+	if(!cam) ERR_NULLP_RET_FAIL;
+	cam->pitch += by;
+	cam->pitch = glm_clamp(cam->pitch,glm_rad(-90 + 0.0625),glm_rad(90 - 0.0625));
+	//recalculateCameraDirection(cam);
+	return EXIT_SUCCESS;
+}
+
+int relativeTranslateCamera(camera_t *cam, vec3 by)
+{
+	if(!cam) ERR_NULLP_RET_FAIL;
+
+	if(by[X])
+	{
+		float ninety = glm_rad(90);
+		if(by[X] < 0) ninety *= -1;
+		cam->pos[X] -= by[X]*sinf(cam->yaw + ninety);
+		cam->pos[Z] -= by[Z]*cosf(cam->yaw + ninety);
+	}
+
+	cam->pos[Y] += by[Y];
+
+	if(by[Z])
+	{
+		float ninety = glm_rad(90);
+		if(by[Z] < 0) ninety *= -1;
+		cam->pos[Z] -= by[Z]*sinf(cam->yaw + ninety);
+		cam->pos[X] -= by[X]*cosf(cam->yaw + ninety);
+	}
+
+	return EXIT_SUCCESS;
+}
+
 int moveCamera(camera_t *cam, Uint32 cameraBitfield)
 {
 	if(!cam) ERR_NULLP_RET_FAIL;
