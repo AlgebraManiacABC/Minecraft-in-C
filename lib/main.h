@@ -23,6 +23,8 @@ extern int ww;
 extern int wh;
 //	The aspect ratio of the window, as determined by the global window dimensions
 #define ASPECT_RATIO (ww/(float)wh)
+#define X_POS_CENTER (ww/2.0)
+#define Y_POS_CENTER (wh/2.0)
 
 //	The global mouse x position
 extern int mx;

@@ -5,7 +5,7 @@
 #include "game.h"
 #include "main.h"
 
-#define INITIAL_SENSITIVITY (0.01f)
+#define INITIAL_SENSITIVITY (0.001f)
 
 typedef unsigned int uint;
 
@@ -76,7 +76,11 @@ int movePlayer(player_t player, Uint32 buttonsHeld)
 		if(relativeTranslateCamera(player->eyes,VEC3(0,-CAM_UPF,0))) return EXIT_FAILURE;
 	}
 
-	//if(changeCameraYaw(player->eyes,(player->sensitivity * mx))) return EXIT_FAILURE;
+	if(mx)
+	{
+		//fprintf(stderr,"mx_centered == %d\n",mx);
+		if(changeCameraYaw(player->eyes,player->sensitivity * -mx)) return EXIT_FAILURE;
+	}
 	if((buttonsHeld & CAMERA_YAW_LEFT) && !(buttonsHeld & CAMERA_YAW_RIGHT))
 	{
 		//	Turn player left
@@ -88,7 +92,11 @@ int movePlayer(player_t player, Uint32 buttonsHeld)
 		if(changeCameraYaw(player->eyes,-player->sensitivity)) return EXIT_FAILURE;
 	}
 
-	//if(changeCameraPitch(player->eyes,(player->sensitivity * my))) return EXIT_FAILURE;
+	if(my)
+	{
+		//fprintf(stderr,"my_centered == %d\n",my);
+		if(changeCameraPitch(player->eyes,player->sensitivity * -my)) return EXIT_FAILURE;
+	}
 	if((buttonsHeld & CAMERA_PITCH_UP) && !(buttonsHeld & CAMERA_PITCH_DOWN))
 	{
 		//	Angle player up

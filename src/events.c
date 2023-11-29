@@ -6,7 +6,7 @@
 
 int handleEvents(bool *shouldClose, player_t player, Uint32 * buttonsHeld, Uint32 * mouseState)
 {
-	*mouseState = SDL_GetMouseState(&mx, &my);
+	*mouseState = SDL_GetRelativeMouseState(&mx, &my);
 
 	SDL_Event event;
 	Uint32 eventCount = 0;

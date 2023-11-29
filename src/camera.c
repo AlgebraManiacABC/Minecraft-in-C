@@ -64,6 +64,7 @@ void recalculateCameraViewMatrix(camera_t *cam)
 int changeCameraYaw(camera_t *cam, float by)
 {
 	if(!cam) ERR_NULLP_RET_FAIL;
+	if(!by) return EXIT_SUCCESS;
 	cam->yaw += by;
 	cam->yaw = fmod(cam->yaw,360.0);
 	//recalculateCameraDirection(cam);
@@ -73,6 +74,7 @@ int changeCameraYaw(camera_t *cam, float by)
 int changeCameraPitch(camera_t *cam, float by)
 {
 	if(!cam) ERR_NULLP_RET_FAIL;
+	if(!by) return EXIT_SUCCESS;
 	cam->pitch += by;
 	cam->pitch = glm_clamp(cam->pitch,glm_rad(-90 + 0.0625),glm_rad(90 - 0.0625));
 	//recalculateCameraDirection(cam);
