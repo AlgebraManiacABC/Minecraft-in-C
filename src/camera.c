@@ -85,20 +85,16 @@ int relativeTranslateCamera(camera_t *cam, vec3 by)
 
 	if(by[X])
 	{
-		float ninety = glm_rad(90);
-		if(by[X] < 0) ninety *= -1;
-		cam->pos[X] -= by[X]*sinf(cam->yaw + ninety);
-		cam->pos[Z] -= by[Z]*cosf(cam->yaw + ninety);
+		cam->pos[X] += by[X]*sinf(cam->yaw + glm_rad(90));
+		cam->pos[Z] += by[X]*cosf(cam->yaw + glm_rad(90));
 	}
 
 	cam->pos[Y] += by[Y];
 
 	if(by[Z])
 	{
-		float ninety = glm_rad(90);
-		if(by[Z] < 0) ninety *= -1;
-		cam->pos[Z] -= by[Z]*sinf(cam->yaw + ninety);
-		cam->pos[X] -= by[X]*cosf(cam->yaw + ninety);
+		cam->pos[X] += by[Z]*sinf(cam->yaw);
+		cam->pos[Z] += by[Z]*cosf(cam->yaw);
 	}
 
 	return EXIT_SUCCESS;
