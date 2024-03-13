@@ -21,10 +21,11 @@
 
 extern vec3 worldUp;
 
+NODISCARD
 /**
  * Main game loop.
- * 
+ *
  */
-void gameLoop();
+Uint32 gameLoop();
 
 #endif

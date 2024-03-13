@@ -17,7 +17,6 @@ struct camera
 	mat4 projMatrix;	// The projection Matrix (of MVP acclaim)
 };
 
-NODISCARD
 camera_t *initCamera(vec3 pos)
 {
 	camera_t *cam = malloc(sizeof(camera_t));

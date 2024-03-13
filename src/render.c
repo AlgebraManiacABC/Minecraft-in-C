@@ -2,11 +2,15 @@
 #include "debug.h"
 #include "cube.h"
 #include "shaders.h"
+#include "assets.h"
 
 bool isWireframe = false;
 GLuint cubeVertexArray = 0;
 GLuint cubeElementBuffer = 0;
 GLuint cubeVertexBuffer = 0;
+GLuint fontVertexArray = 0;
+GLuint fontVertexBuffer = 0;
+GLuint fontElementBuffer = 0;
 
 void initRenderer(void)
 {
@@ -18,6 +22,7 @@ void initRenderer(void)
 	glBindVertexArray(cubeVertexArray);
 	//	Actual Vertex Data
 	glGenBuffers(1,&cubeVertexBuffer);
+	fprintf(stderr,"new VAO (cubeVertexarray) = %d\n",cubeVertexArray);
 	glBindBuffer(GL_ARRAY_BUFFER,cubeVertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER,sizeof(cubeVertices),cubeVertices,GL_STATIC_READ);
 
@@ -37,6 +42,24 @@ void initRenderer(void)
 	glGenBuffers(1,&cubeElementBuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,cubeElementBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(cubeVertexIndices),cubeVertexIndices,GL_STATIC_READ);
+
+	//	Font Vertex/Element Buffer
+	glGenVertexArrays(1,&fontVertexArray);
+	fprintf(stderr,"new VAO (fontVertexarray) = %d\n",fontVertexArray);
+	glBindVertexArray(fontVertexArray);
+
+	glGenBuffers(1,&fontVertexBuffer);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3+2,0);
+
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1,2,GL_FLOAT,GL_FALSE,3+2,(const void*)(sizeof(GLfloat)*3));
+
+	glGenBuffers(2,&fontElementBuffer);
+	GLfloat fontVertexIndices[] = {0,1,2,3};
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,fontElementBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(fontVertexIndices),fontVertexIndices,GL_STATIC_READ);
 
 	glBindVertexArray(0);
 
@@ -59,8 +82,8 @@ void toggleWireframe()
 
 void renderCube(camera_t *cam, vec3 voxelPosition, GLuint texture)
 {
-	glBindTexture(GL_TEXTURE_2D,texture);
 	glBindVertexArray(cubeVertexArray);
+	glBindTexture(GL_TEXTURE_2D,texture);
 
 	mat4 modelMatrix = GLM_MAT4_IDENTITY_INIT;
 	glm_translate(modelMatrix,voxelPosition);
@@ -71,8 +94,6 @@ void renderCube(camera_t *cam, vec3 voxelPosition, GLuint texture)
 	glUniformMatrix4fv(vpMatLocus,1,GL_FALSE,(GLfloat*)vpMatrix);
 
 	glDrawElements(GL_TRIANGLES,36,GL_UNSIGNED_INT,NULL);
-	glBindVertexArray(0);
-	glBindTexture(GL_TEXTURE_2D,0);
 }
 
 void renderRotatedCube(camera_t *cam, vec3 voxelPosition, GLuint texture, vec3 rot)
@@ -96,6 +117,40 @@ void renderRotatedCube(camera_t *cam, vec3 voxelPosition, GLuint texture, vec3 r
 	glBindTexture(GL_TEXTURE_2D,0);
 }
 
+GLuint renderText(vec2 sp, GLuint fontMapTexture,
+				const char* text, float charHeight, float charWidth)
+{
+	glBindVertexArray(fontVertexArray);
+	glBindTexture(GL_TEXTURE_2D,fontMapTexture);
+	glUniformMatrix4fv(vpMatLocus,1,GL_FALSE,(GLfloat*)GLM_MAT4_IDENTITY);
+	glUniformMatrix4fv(mMatLocus,1,GL_FALSE,(GLfloat*)GLM_MAT4_IDENTITY);
+
+	GLfloat charBoxVertices[] =
+	{
+		sp[X]-1,1-sp[Y],1, (1/16.0), (12/14.0),
+		sp[X]-1+charWidth,1-sp[Y],1, (2/16.0), (12/14.0),
+		sp[X]-1,1-sp[Y]-charHeight,1, (1/16.0), (11/14.0),
+		sp[X]-1+charWidth,1-sp[Y]-charHeight,1, (2/16.0), (11/14.0)
+	};
+
+	int charsPrinted;
+	for(charsPrinted = 0; *text && sp[X] + (charWidth*charsPrinted) < 2; text++,charsPrinted++)
+	{
+		glBufferData(GL_ARRAY_BUFFER,sizeof(charBoxVertices),charBoxVertices,GL_STATIC_DRAW);
+		glDrawElements(GL_TRIANGLE_FAN,4,GL_UNSIGNED_INT,NULL);
+
+		for(int i=0; i<4; i++)
+		{
+			charBoxVertices[i] += charWidth;
+		}
+	}
+
+	glBindTexture(GL_TEXTURE_2D,0);
+	glBindVertexArray(0);
+	return charsPrinted;
+}
+
 void renderUI()
 {
+	(void)renderText((vec2){0,0},fontMapTexture,"Hello, world!",0.01,0.01);
 }

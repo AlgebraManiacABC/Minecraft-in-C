@@ -1,4 +1,5 @@
 #include "shaders.h"
+#include <cglm/cglm.h>
 
 GLint vpMatLocus = 0;
 GLint mMatLocus = 0;
@@ -36,7 +37,7 @@ GLuint createShaderProgram(size_t shaderCount, ...)
 		setError(ERR_MESG,"Shader linking failure: %s",info_log);
 		return 0;
 	}
-	return shaderProgram;	
+	return shaderProgram;
 }
 
 GLuint createShader(const char * shaderFilename, GLenum shaderType)
@@ -84,5 +85,19 @@ GLuint createProgram(size_t shaderCount, ...)
 		setError(ERR_MESG,"Shader linking failure: %s",info_log);
 		return 0;
 	}
+	return shaderProgram;
+}
+
+GLuint reloadShaders()
+{
+	GLuint shaderProgram = createShaderProgram(2,
+			"../src/shaders/main.frag",GL_FRAGMENT_SHADER,
+			"../src/shaders/transform.vert",GL_VERTEX_SHADER);
+	if(!shaderProgram) return 0;
+	glUseProgram(shaderProgram);
+
+	vpMatLocus = glGetUniformLocation(shaderProgram,"vpMatrix");
+	mMatLocus = glGetUniformLocation(shaderProgram,"modelMatrix");
+	glUniformMatrix4fv(mMatLocus,1,GL_FALSE,(float*)GLM_MAT4_IDENTITY);
 	return shaderProgram;
 }

@@ -12,6 +12,7 @@ Uint32 numBlocks = 0;
 char ** blockNames = NULL;
 char ** assetFiles = NULL;
 GLuint * blockTextures = NULL;
+GLuint fontMapTexture = 0;
 
 NODISCARD
 int commaCount(const char * line)
@@ -75,7 +76,7 @@ void loadAssets(const char * assetListFilename)
 {
 	csv_t csv = CSV_loadFromFile(assetListFilename);
 	if(!csv) ERR_NULLP_RETURN;
-	CSV_fprint(stderr,csv);
+	//CSV_fprint(stderr,csv);
 
 	int lineCount = CSV_lineCount(csv);
 	size_t maxBlockID = 0;
@@ -123,6 +124,13 @@ void loadAssets(const char * assetListFilename)
 		return;
 	}
 	CSV_free(csv);
+}
+
+void loadFontMap(const char * fontMapFilename)
+{
+	fontMapTexture = textureFromFile(fontMapFilename);
+	if(!fontMapTexture) ERR_NULLP_RETURN;
+	return;
 }
 
 NODISCARD

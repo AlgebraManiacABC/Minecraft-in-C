@@ -16,7 +16,7 @@ NODISCARD
  * Creates a camera object, sets initial position and direction, and hands it to the user
  *
  * @param pos the position to place the camera
- * @return A camera object with position {0,0,2} and yaw/pitch {0,0}
+ * @return A camera object with position `pos` and yaw/pitch {0,0}
  */
 camera_t *initCamera(vec3 pos);
 

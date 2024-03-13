@@ -10,6 +10,11 @@
 #include <cglm/cglm.h>
 #include <time.h>
 
+#define STATE_ERROR (-1)
+#define STATE_QUIT 0
+#define STATE_MAIN_MENU 1
+#define STATE_NEW_WORLD 2
+
 #define VEC3(x,y,z) ((vec3){x,y,z})
 
 #define INITIAL_WINDOW_W (800)
@@ -17,6 +22,8 @@
 
 //	The global window object
 extern SDL_Window *w;
+//	The global renderer object
+extern SDL_Renderer *r;
 //	The global window width
 extern int ww;
 //	The global window height

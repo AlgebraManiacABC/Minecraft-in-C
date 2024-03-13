@@ -1,6 +1,9 @@
 # Prerequisites
 *.d
 
+# Minecraft Asset Files
+minecraft-assets*
+
 # Test Dirs
 test*
 
@@ -11,6 +14,7 @@ test*
 build
 buildNT
 build*
+releases
 
 # CMake Files
 CMakeFiles

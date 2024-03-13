@@ -34,6 +34,7 @@ int handleEvents(bool *shouldClose, player_t player, Uint32 * buttonsHeld, Uint3
 						toggleWireframe();
 						break;
 					case SDL_SCANCODE_ESCAPE:
+					case SDL_SCANCODE_Q:
 						(*shouldClose) = true;
 						return eventCount;
 					case SDL_SCANCODE_W:

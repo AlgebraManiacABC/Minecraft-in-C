@@ -10,34 +10,26 @@
 
 vec3 worldUp = {0,1,0};
 
-GLuint reloadShaders()
-{
-	GLuint shaderProgram = createShaderProgram(2,
-			"../src/shaders/main.frag",GL_FRAGMENT_SHADER,
-			"../src/shaders/transform.vert",GL_VERTEX_SHADER);
-	if(!shaderProgram) return 0;
-	glUseProgram(shaderProgram);
-
-	vpMatLocus = glGetUniformLocation(shaderProgram,"vpMatrix");
-	mMatLocus = glGetUniformLocation(shaderProgram,"modelMatrix");
-	glUniformMatrix4fv(mMatLocus,1,GL_FALSE,(float*)GLM_MAT4_IDENTITY);
-	return shaderProgram;
-}
-
-void gameLoop()
+Uint32 gameLoop()
 {
 	GLuint shaderProgram = reloadShaders();
 	if(!shaderProgram)
 	{
 		fprintf(stderr,"Couldn't load shader program: %s\n",getError());
-		return;
+		return STATE_ERROR;
 	}
 
 	loadAssets("../assets/asset_list.csv");
 	if(!numBlocks)
 	{
 		fprintf(stderr,"Error getting assets: %s\n",getError());
-		return;
+		return STATE_ERROR;
+	}
+	loadFontMap("../assets/font/font_map.png");
+	if(!fontMapTexture)
+	{
+		fprintf(stderr,"Error getting font map: %s\n",getError());
+		return STATE_ERROR;
 	}
 	initRenderer();
 	helloWorld();
@@ -53,14 +45,14 @@ void gameLoop()
 		if(handleEvents(&shouldClose, player, &buttonsHeld, &mouseState) < 0)
 		{
 			fprintf(stderr,"Error while processing events: %s\n",getError());
-			return;
+			return STATE_ERROR;
 		}
-		if(shouldClose) return;
+		if(shouldClose) return STATE_QUIT;
 		//SDL_WarpMouseInWindow(w,ww/2,wh/2);
 		if(movePlayer(player,buttonsHeld))
 		{
 			fprintf(stderr,"Error while moving camera: %s\n",getError());
-			return;
+			return STATE_ERROR;
 		}
 		if(buttonsHeld & SHADER_RELOAD_REQUESTED)
 		{
@@ -91,4 +83,6 @@ void gameLoop()
 		SDL_GL_SwapWindow(w);
 		SDL_Delay(1000/FPS);
 	}
+	// Shouldn't reach here but:
+	return STATE_QUIT;
 }
