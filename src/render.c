@@ -49,15 +49,23 @@ void initRenderer(void)
 	glBindVertexArray(fontVertexArray);
 
 	glGenBuffers(1,&fontVertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER,fontVertexBuffer);
 
+	// Specify Vertex Positional Data (Char box)
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3+2,0);
+	glVertexAttribPointer(0,FONT_FLOATS_PER_POS,GL_FLOAT,GL_FALSE,FONT_STRIDE,FONT_POS_OFFSET);
 
+	// Specify Vertex Normals (all facing camera)
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1,2,GL_FLOAT,GL_FALSE,3+2,(const void*)(sizeof(GLfloat)*3));
+	glVertexAttribPointer(1,FONT_FLOATS_PER_NORMAL,GL_FLOAT,GL_FALSE,FONT_STRIDE,FONT_NORMAL_OFFSET);
 
-	glGenBuffers(2,&fontElementBuffer);
-	GLfloat fontVertexIndices[] = {0,1,2,3};
+	// Specify Vertex Texture Data (fontMap)
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2,FONT_FLOATS_PER_TEXTURE,GL_FLOAT,GL_FALSE,FONT_STRIDE,FONT_TEXTURE_OFFSET);
+
+	//	Specify Vertex Indices (Char boxes)
+	glGenBuffers(1,&fontElementBuffer);
+	static GLfloat fontVertexIndices[] = {0,1,2, 1,3,2};
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,fontElementBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(fontVertexIndices),fontVertexIndices,GL_STATIC_READ);
 
@@ -127,21 +135,32 @@ GLuint renderText(vec2 sp, GLuint fontMapTexture,
 
 	GLfloat charBoxVertices[] =
 	{
-		sp[X]-1,1-sp[Y],1, (1/16.0), (12/14.0),
-		sp[X]-1+charWidth,1-sp[Y],1, (2/16.0), (12/14.0),
-		sp[X]-1,1-sp[Y]-charHeight,1, (1/16.0), (11/14.0),
-		sp[X]-1+charWidth,1-sp[Y]-charHeight,1, (2/16.0), (11/14.0)
+		sp[X]-1, 1-sp[Y], 0,
+			0, 0, -1,
+			(1/16.0), (12/14.0),
+		sp[X]-1+charWidth, 1-sp[Y], 0,
+			0, 0, -1,
+			(2/16.0), (12/14.0),
+		sp[X]-1, 1-sp[Y]-charHeight, 0,
+			0, 0, -1,
+			(1/16.0), (11/14.0),
+		sp[X]-1+charWidth, 1-sp[Y]-charHeight, 0,
+			0, 0, -1,
+			(2/16.0), (11/14.0)
 	};
 
 	int charsPrinted;
 	for(charsPrinted = 0; *text && sp[X] + (charWidth*charsPrinted) < 2; text++,charsPrinted++)
 	{
+		print1dFloatArrayAsTable(charBoxVertices,4,FONT_FLOATS_PER_VERTEX);
+		printf("\tfontVertexBuffer = %d\n", fontVertexBuffer);
+		puts("");
 		glBufferData(GL_ARRAY_BUFFER,sizeof(charBoxVertices),charBoxVertices,GL_STATIC_DRAW);
-		glDrawElements(GL_TRIANGLE_FAN,4,GL_UNSIGNED_INT,NULL);
+		glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,NULL);
 
 		for(int i=0; i<4; i++)
 		{
-			charBoxVertices[i] += charWidth;
+			charBoxVertices[X + (i * FONT_FLOATS_PER_VERTEX)] += charWidth;
 		}
 	}
 
@@ -152,5 +171,7 @@ GLuint renderText(vec2 sp, GLuint fontMapTexture,
 
 void renderUI()
 {
-	(void)renderText((vec2){0,0},fontMapTexture,"Hello, world!",0.01,0.01);
+	glDisable(GL_DEPTH_TEST);
+	(void)renderText((vec2){1,1},fontMapTexture,"Hello, world!",0.1,0.1);
+	glEnable(GL_DEPTH_TEST);
 }
