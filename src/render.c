@@ -65,7 +65,7 @@ void initRenderer(void)
 
 	//	Specify Vertex Indices (Char boxes)
 	glGenBuffers(1,&fontElementBuffer);
-	static GLfloat fontVertexIndices[] = {0,1,2, 1,3,2};
+	static int fontVertexIndices[] = {0,1,2, 1,3,2};
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,fontElementBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(fontVertexIndices),fontVertexIndices,GL_STATIC_READ);
 
