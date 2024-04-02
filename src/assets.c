@@ -129,7 +129,6 @@ void loadAssets(const char * assetListFilename)
 void loadFontMap(const char * fontMapFilename)
 {
 	fontMapTexture = textureFromFile(fontMapFilename);
-	if(!fontMapTexture) ERR_NULLP_RETURN;
 	return;
 }
 

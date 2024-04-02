@@ -14,7 +14,7 @@ GLuint textureFromFile(const char * filename)
 		setError(ERR_MESG,"Error retrieving data from \"%s\": %s",filename,stbi_failure_reason());
 		return 0;
 	}
-	if(numChannels != 4)
+	if(numChannels != 4 && numChannels != 3)
 	{
 		setError(ERR_MESG,"stb_image did not return 4 channels...");
 		return 0;
@@ -28,8 +28,16 @@ GLuint textureFromFile(const char * filename)
 	glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	int mips = 1 + floor(log2(MAX(width,height)));
-	glTextureStorage2D(texture, mips, GL_RGBA8, width, height);
-	glTextureSubImage2D(texture, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	if(numChannels == 4)
+	{
+		glTextureStorage2D(texture, mips, GL_RGBA8, width, height);
+		glTextureSubImage2D(texture, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	}
+	else
+	{
+		glTextureStorage2D(texture, mips, GL_RGB8, width, height);
+		glTextureSubImage2D(texture, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
+	}
 	glGenerateTextureMipmap(texture);
 
 	stbi_image_free(data);

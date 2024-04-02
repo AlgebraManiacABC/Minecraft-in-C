@@ -65,7 +65,7 @@ void initRenderer(void)
 
 	//	Specify Vertex Indices (Char boxes)
 	glGenBuffers(1,&fontElementBuffer);
-	static GLfloat fontVertexIndices[] = {0,1,2, 1,3,2};
+	static GLuint fontVertexIndices[] = {0,1,2, 1,3,2};
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,fontElementBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(fontVertexIndices),fontVertexIndices,GL_STATIC_READ);
 
@@ -135,26 +135,34 @@ GLuint renderText(vec2 sp, GLuint fontMapTexture,
 
 	GLfloat charBoxVertices[] =
 	{
+		//	Top left:
 		sp[X]-1, 1-sp[Y], 0,
 			0, 0, -1,
-			(1/16.0), (12/14.0),
+			//(1/16.0), (12/14.0),
+			0, 1,
+		//	Top right:
 		sp[X]-1+charWidth, 1-sp[Y], 0,
 			0, 0, -1,
-			(2/16.0), (12/14.0),
+			//(2/16.0), (12/14.0),
+			1, 1,
+		//	Bottom left:
 		sp[X]-1, 1-sp[Y]-charHeight, 0,
 			0, 0, -1,
-			(1/16.0), (11/14.0),
+			//(1/16.0), (11/14.0),
+			0, 0,
+		//	Bottom right:
 		sp[X]-1+charWidth, 1-sp[Y]-charHeight, 0,
 			0, 0, -1,
-			(2/16.0), (11/14.0)
+			//(2/16.0), (11/14.0)
+			1, 0
 	};
 
 	int charsPrinted;
 	for(charsPrinted = 0; *text && sp[X] + (charWidth*charsPrinted) < 2; text++,charsPrinted++)
 	{
-		print1dFloatArrayAsTable(charBoxVertices,4,FONT_FLOATS_PER_VERTEX);
-		printf("\tfontVertexBuffer = %d\n", fontVertexBuffer);
-		puts("");
+		//print1dFloatArrayAsTable(charBoxVertices,4,FONT_FLOATS_PER_VERTEX);
+		//printf("\tfontVertexBuffer = %d\n", fontVertexBuffer);
+		//puts("");
 		glBufferData(GL_ARRAY_BUFFER,sizeof(charBoxVertices),charBoxVertices,GL_STATIC_DRAW);
 		glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,NULL);
 
@@ -172,6 +180,6 @@ GLuint renderText(vec2 sp, GLuint fontMapTexture,
 void renderUI()
 {
 	glDisable(GL_DEPTH_TEST);
-	(void)renderText((vec2){1,1},fontMapTexture,"Hello, world!",0.1,0.1);
+	(void)renderText((vec2){0.5,0.5},fontMapTexture,"Hello, world!",0.1,0.1);
 	glEnable(GL_DEPTH_TEST);
 }

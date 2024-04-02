@@ -41,6 +41,7 @@ int main(int argc, char *argv[])
 				break;
 			case STATE_ERROR:
 				fprintf(stderr,"%s\n",getError());
+				state = STATE_QUIT;
 			case STATE_QUIT:
 				break;
 			default:
