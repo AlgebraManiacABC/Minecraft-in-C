@@ -16,7 +16,10 @@ void initRenderer(void)
 {
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glGenVertexArrays(1,&cubeVertexArray);
 	glBindVertexArray(cubeVertexArray);
@@ -65,7 +68,7 @@ void initRenderer(void)
 
 	//	Specify Vertex Indices (Char boxes)
 	glGenBuffers(1,&fontElementBuffer);
-	static GLuint fontVertexIndices[] = {0,1,2, 1,3,2};
+	static GLuint fontVertexIndices[] = {1,0,2, 3,1,2};
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,fontElementBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(fontVertexIndices),fontVertexIndices,GL_STATIC_READ);
 
@@ -138,23 +141,19 @@ GLuint renderText(vec2 sp, GLuint fontMapTexture,
 		//	Top left:
 		sp[X]-1, 1-sp[Y], 0,
 			0, 0, -1,
-			//(1/16.0), (12/14.0),
-			0, 1,
+			(1/16.0), (12/14.0),
 		//	Top right:
 		sp[X]-1+charWidth, 1-sp[Y], 0,
 			0, 0, -1,
-			//(2/16.0), (12/14.0),
-			1, 1,
+			(2/16.0), (12/14.0),
 		//	Bottom left:
 		sp[X]-1, 1-sp[Y]-charHeight, 0,
 			0, 0, -1,
-			//(1/16.0), (11/14.0),
-			0, 0,
+			(1/16.0), (11/14.0),
 		//	Bottom right:
 		sp[X]-1+charWidth, 1-sp[Y]-charHeight, 0,
 			0, 0, -1,
-			//(2/16.0), (11/14.0)
-			1, 0
+			(2/16.0), (11/14.0)
 	};
 
 	int charsPrinted;
