@@ -11,6 +11,9 @@ extern char ** assetFiles;
 extern GLuint * blockTextures;
 extern GLuint fontMapTexture;
 
+#define FONT_MAP_VERT_CHARS 16
+#define FONT_MAP_HORZ_CHARS 16
+
 void loadAssets(const char * assetListFilename);
 
 void loadFontMap(const char * fontMapFilename);

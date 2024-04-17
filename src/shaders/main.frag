@@ -21,6 +21,8 @@ void main()
 
 vec4 light(vec4 texColor)
 {
+	if(texColor.a < 0.1)
+        discard;
 	//	Convert normals to world coordinates
 	vec3 realNormal = transpose(inverse(mat3(modelMatrix))) * Normal;
 

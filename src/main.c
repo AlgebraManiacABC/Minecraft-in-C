@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 				state = gameLoop();
 				break;
 			case STATE_ERROR:
-				fprintf(stderr,"%s\n",getError());
+				fprintf(stderr,"An error was returned... Exiting!\n");
 				state = STATE_QUIT;
 			case STATE_QUIT:
 				break;

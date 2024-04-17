@@ -16,7 +16,7 @@ GLuint textureFromFile(const char * filename)
 	}
 	if(numChannels != 4 && numChannels != 3)
 	{
-		setError(ERR_MESG,"stb_image did not return 4 channels...");
+		setError(ERR_MESG,"stb_image returned %d channels... (expected 3 or 4)",numChannels);
 		return 0;
 	}
 

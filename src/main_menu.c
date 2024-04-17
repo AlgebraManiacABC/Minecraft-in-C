@@ -62,7 +62,7 @@ Uint32 mainMenu(void)
 		}
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		(void)renderText((vec2){0,0},fontMapTexture,"Hello, world!",0.01,0.01);
+		(void)renderText((vec2){0,0},fontMapTexture,"Hello, world!",0.01);
 		SDL_GL_SwapWindow(w);
 		SDL_Delay(1000/FPS);
 	}

@@ -54,7 +54,7 @@ NODISCARD
  * @returns the number of characters printed
  */
 GLuint renderText(vec2 screenPosition, GLuint fontMapTexture,
-				const char* text, float charHeight, float charWidth);
+				const char* text, float charHeight);
 
 /**
  * Not yet implemented.

@@ -129,31 +129,34 @@ void renderRotatedCube(camera_t *cam, vec3 voxelPosition, GLuint texture, vec3 r
 }
 
 GLuint renderText(vec2 sp, GLuint fontMapTexture,
-				const char* text, float charHeight, float charWidth)
+				const char* text, float charHeight)
 {
 	glBindVertexArray(fontVertexArray);
 	glBindTexture(GL_TEXTURE_2D,fontMapTexture);
 	glUniformMatrix4fv(vpMatLocus,1,GL_FALSE,(GLfloat*)GLM_MAT4_IDENTITY);
 	glUniformMatrix4fv(mMatLocus,1,GL_FALSE,(GLfloat*)GLM_MAT4_IDENTITY);
 
+	GLfloat texCharWidth = 1/(float)FONT_MAP_HORZ_CHARS;
+	GLfloat texCharHeight = 1/(float)FONT_MAP_VERT_CHARS;
+	float charWidth = (charHeight / texCharHeight) * texCharWidth;
 	GLfloat charBoxVertices[] =
 	{
 		//	Top left:
 		sp[X]-1, 1-sp[Y], 0,
 			0, 0, -1,
-			(1/16.0), (12/14.0),
+			(1/16.0), (12/16.0),
 		//	Top right:
 		sp[X]-1+charWidth, 1-sp[Y], 0,
 			0, 0, -1,
-			(2/16.0), (12/14.0),
+			(2/16.0), (12/16.0),
 		//	Bottom left:
 		sp[X]-1, 1-sp[Y]-charHeight, 0,
 			0, 0, -1,
-			(1/16.0), (11/14.0),
+			(1/16.0), (11/16.0),
 		//	Bottom right:
 		sp[X]-1+charWidth, 1-sp[Y]-charHeight, 0,
 			0, 0, -1,
-			(2/16.0), (11/14.0)
+			(2/16.0), (11/16.0)
 	};
 
 	int charsPrinted;
@@ -179,6 +182,6 @@ GLuint renderText(vec2 sp, GLuint fontMapTexture,
 void renderUI()
 {
 	glDisable(GL_DEPTH_TEST);
-	(void)renderText((vec2){0.5,0.5},fontMapTexture,"Hello, world!",0.1,0.1);
+	(void)renderText((vec2){0.5,0.5},fontMapTexture,"Hello, world!",0.1);
 	glEnable(GL_DEPTH_TEST);
 }
