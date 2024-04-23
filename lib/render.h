@@ -10,6 +10,19 @@
 #include <cglm/cglm.h>
 #include "camera.h"
 
+typedef struct
+{
+	GLfloat x;
+	GLfloat y;
+	GLfloat z;
+	GLfloat nx;
+	GLfloat ny;
+	GLfloat nz;
+	GLfloat tx;
+	GLfloat ty;
+
+}	vertex_s;
+
 /**
  * Sets up necessary OpenGL features, generates the vertex array, and generates the cube's vertex and element buffers.
  *

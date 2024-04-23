@@ -13,6 +13,7 @@ extern GLuint fontMapTexture;
 
 #define FONT_MAP_VERT_CHARS 16
 #define FONT_MAP_HORZ_CHARS 16
+#define FONT_MAP_UNK_CHAR_INDEX ('\xb1')
 
 void loadAssets(const char * assetListFilename);
 

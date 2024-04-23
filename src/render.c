@@ -3,6 +3,7 @@
 #include "cube.h"
 #include "shaders.h"
 #include "assets.h"
+#include "main.h"
 
 bool isWireframe = false;
 GLuint cubeVertexArray = 0;
@@ -138,39 +139,58 @@ GLuint renderText(vec2 sp, GLuint fontMapTexture,
 
 	GLfloat texCharWidth = 1/(float)FONT_MAP_HORZ_CHARS;
 	GLfloat texCharHeight = 1/(float)FONT_MAP_VERT_CHARS;
-	float charWidth = (charHeight / texCharHeight) * texCharWidth;
-	GLfloat charBoxVertices[] =
+	//float charWidth = (charHeight / texCharHeight) * texCharWidth;
+	float charWidth = charHeight / ASPECT_RATIO;
+	vertex_s charBoxVertices[4] =
 	{
 		//	Top left:
-		sp[X]-1, 1-sp[Y], 0,
+		{
+			sp[X]-1, 1-sp[Y], 0,
 			0, 0, -1,
-			(1/16.0), (12/16.0),
+			.tx=(1/16.0), .ty=(12/16.0)
+		},
 		//	Top right:
-		sp[X]-1+charWidth, 1-sp[Y], 0,
+		{
+			sp[X]-1+charWidth, 1-sp[Y], 0,
 			0, 0, -1,
-			(2/16.0), (12/16.0),
+			(2/16.0), (12/16.0)
+		},
 		//	Bottom left:
-		sp[X]-1, 1-sp[Y]-charHeight, 0,
+		{
+			sp[X]-1, 1-sp[Y]-charHeight, 0,
 			0, 0, -1,
-			(1/16.0), (11/16.0),
+			(1/16.0), (11/16.0)
+		},
 		//	Bottom right:
-		sp[X]-1+charWidth, 1-sp[Y]-charHeight, 0,
+		{
+			sp[X]-1+charWidth, 1-sp[Y]-charHeight, 0,
 			0, 0, -1,
 			(2/16.0), (11/16.0)
+		}
 	};
 
 	int charsPrinted;
 	for(charsPrinted = 0; *text && sp[X] + (charWidth*charsPrinted) < 2; text++,charsPrinted++)
 	{
-		//print1dFloatArrayAsTable(charBoxVertices,4,FONT_FLOATS_PER_VERTEX);
-		//printf("\tfontVertexBuffer = %d\n", fontVertexBuffer);
-		//puts("");
+		int indexToPrint = *text;
+		if(*text < 0 || *text >= (FONT_MAP_HORZ_CHARS*FONT_MAP_VERT_CHARS))
+		{
+			indexToPrint = FONT_MAP_UNK_CHAR_INDEX;
+		}
+		int mapRow = indexToPrint / FONT_MAP_HORZ_CHARS;
+		int mapCol = indexToPrint % FONT_MAP_VERT_CHARS;
+
+		charBoxVertices[0].tx = charBoxVertices[2].tx = mapCol * texCharWidth;
+		charBoxVertices[0].ty = charBoxVertices[1].ty = 1 - (mapRow * texCharHeight);
+		charBoxVertices[1].tx = charBoxVertices[3].tx = ((mapCol + 1) * texCharWidth);
+		charBoxVertices[2].ty = charBoxVertices[3].ty = 1 - ((mapRow + 1) * texCharHeight);
+
 		glBufferData(GL_ARRAY_BUFFER,sizeof(charBoxVertices),charBoxVertices,GL_STATIC_DRAW);
 		glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,NULL);
 
 		for(int i=0; i<4; i++)
 		{
-			charBoxVertices[X + (i * FONT_FLOATS_PER_VERTEX)] += charWidth;
+			charBoxVertices[i].x += charWidth;
 		}
 	}
 
