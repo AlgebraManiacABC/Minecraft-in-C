@@ -16,11 +16,30 @@ int main(void)
 
     Vector3 cubePosition = { 0.0f, 0.0f, 0.0f };
 
+    DisableCursor();                // Disable cursor for camera movement
+
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
 
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
+
+        UpdateCameraPro(&camera,
+            (Vector3){
+                (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))*0.1f -      // Move forward-backward
+                (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN))*0.1f,
+                (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))*0.1f -   // Move right-left
+                (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))*0.1f,
+                0.0f                                                // Move up-down
+            },
+            (Vector3){
+                GetMouseDelta().x*0.05f,                            // Rotation: yaw
+                GetMouseDelta().y*0.05f,                            // Rotation: pitch
+                0.0f                                                // Rotation: roll
+            },
+            0.0f);                              // zoom disabled
+
+
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
