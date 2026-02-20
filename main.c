@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "raylib.h"
+#include "world.h"
 
 int main(void)
 {
@@ -8,7 +9,7 @@ int main(void)
     InitWindow(screenWidth, screenHeight, "Hello raylib!");
 
     Camera3D camera = { 0 };
-    camera.position = (Vector3){ 0.0f, 10.0f, 10.0f };  // Camera position
+    camera.position = (Vector3){ 8.0f, 17.0f, 8.0f };  // Camera position
     camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Camera looking at point
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
     camera.fovy = 45.0f;                                // Camera field-of-view Y
@@ -19,6 +20,11 @@ int main(void)
     DisableCursor();                // Disable cursor for camera movement
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+
+    BlockWorld world;
+    world.maxWidth = 16;
+    world.maxHeight = 32;
+    world.tempBlockLevel = 16;
 
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -46,10 +52,7 @@ int main(void)
 
         BeginMode3D(camera);
 
-        DrawCube(cubePosition, 2.0f, 2.0f, 2.0f, RED);
-        DrawCubeWires(cubePosition, 2.0f, 2.0f, 2.0f, MAROON);
-
-        DrawGrid(10, 1.0f);
+        DrawWorld(&world);
 
         EndMode3D();
 

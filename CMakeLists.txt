@@ -18,7 +18,9 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(raylib)
 
-add_executable(${PROJECT_NAME} main.c)
+add_executable(${PROJECT_NAME} main.c
+        world.c
+        world.h)
 
 # Include
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE})
