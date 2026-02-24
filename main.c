@@ -6,6 +6,7 @@ int main(void)
 {
     const int screenWidth = 800;
     const int screenHeight = 450;
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(screenWidth, screenHeight, "Hello raylib!");
 
     Camera3D camera = { 0 };
@@ -14,8 +15,6 @@ int main(void)
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
     camera.fovy = 45.0f;                                // Camera field-of-view Y
     camera.projection = CAMERA_PERSPECTIVE;             // Camera mode type
-
-    Vector3 cubePosition = { 0.0f, 0.0f, 0.0f };
 
     DisableCursor();                // Disable cursor for camera movement
 
