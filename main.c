@@ -2,6 +2,8 @@
 #include "raylib.h"
 #include "world.h"
 
+enum blocks{
+
 int main(void)
 {
     const int screenWidth = 800;
@@ -26,9 +28,38 @@ int main(void)
     world.maxHeight = 32;
     world.tempBlockLevel = 16;
 
+    Player player;
+    Block fallingBlocks[100];
+	int blockCount = 0;
+
+	// Initialize
+	InitPlayer(&player, (Vector3){5, 10, 5});
+
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
+
+	    float deltaTime = GetFrameTime();
+	    
+	    HandlePlayerInput(&player);
+	    UpdatePlayer(&player, &world, deltaTime);
+	    
+	    for (int i = 0; i < blockCount; i++)
+	    {
+		UpdateBlock(&fallingBlocks[i], &world, deltaTime);
+	    }
+	    
+	    BeginDrawing();
+	    ClearBackground(SKYBLUE);
+	    
+	    BeginMode3D(camera);
+	    DrawWorld(&world);
+	    DrawPlayer(&player);
+	    DrawFallingBlocks(fallingBlocks, blockCount);
+	    EndMode3D();
+	    
+	    EndDrawing();
+
 
         UpdateCameraPro(&camera,
             (Vector3){
@@ -64,7 +95,7 @@ int main(void)
         EndDrawing();
         //----------------------------------------------------------------------------------
     }
+    
 
-    CloseWindow();
     return 0;
 }
