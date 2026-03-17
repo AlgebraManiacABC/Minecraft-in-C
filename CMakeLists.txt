@@ -20,7 +20,9 @@ FetchContent_MakeAvailable(raylib)
 
 add_executable(${PROJECT_NAME} main.c
         world.c
-        world.h)
+        world.h
+        voxel_mesh.c
+        voxel_mesh.h)
 
 # Include
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE})
