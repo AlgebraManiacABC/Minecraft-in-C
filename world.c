@@ -18,9 +18,9 @@ BlockWorld * InitWorld(int maxWidth, int maxHeight, int tempBlockLevel)
 
 bool BlockIsSolid(BlockWorld * world, int x, int y, int z)
 {
-    if (x < 0 || x > world->maxWidth) return false;
-    if (y < 0 || y > world->tempBlockLevel) return false;
-    if (z < 0 || z > world->maxWidth) return false;
+    if (x < 0 || x >= world->maxWidth) return false;
+    if (y < 0 || y >= world->tempBlockLevel) return false;
+    if (z < 0 || z >= world->maxWidth) return false;
     return true;
 }
 
@@ -82,10 +82,10 @@ void UpdateWorldMesh(BlockWorld * world)
                 bool faces[6] = { false, false, false, false, false, false };
 
                 if (!BlockIsSolid(world, x+1, y, z))
-                    faces[EAST] = true;
+                    faces[WEST] = true;
 
                 if (!BlockIsSolid(world, x-1, y, z))
-                    faces[WEST] = true;
+                    faces[EAST] = true;
 
                 if (!BlockIsSolid(world, x, y+1, z))
                     faces[UP] = true;
@@ -94,10 +94,10 @@ void UpdateWorldMesh(BlockWorld * world)
                     faces[DOWN] = true;
 
                 if (!BlockIsSolid(world, x, y, z+1))
-                    faces[NORTH] = true;
+                    faces[SOUTH] = true;
 
                 if (!BlockIsSolid(world, x, y, z-1))
-                    faces[SOUTH] = true;
+                    faces[NORTH] = true;
 
                 // build the faces that hit open air for this voxel block
                 AddCube(mesher, (Vector3){x, y, z}, faces);
