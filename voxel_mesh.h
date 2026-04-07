@@ -2,7 +2,6 @@
 #define VOXEL_MESH_H
 
 #include <stddef.h>
-
 #include "raylib.h"
 
 typedef struct VoxelMesher
@@ -12,9 +11,25 @@ typedef struct VoxelMesher
     size_t vertIndex;
 
     Vector3 normal;
-    unsigned char *color;
+    Color color;
     Vector2 uv;
 
 }   VoxelMesher;
+
+typedef enum
+{
+    NORTH,
+    SOUTH,
+    EAST,
+    WEST,
+    UP,
+    DOWN
+}	BlockFace;
+
+VoxelMesher * InitVoxelMesher(int triangles, bool useColors);
+
+Mesh * FinalizeMesh(VoxelMesher * mesher);
+
+void AddCube(VoxelMesher * mesher, Vector3 position, bool faces[6]);
 
 #endif
