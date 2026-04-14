@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 #include "raylib.h"
-#include "voxel_mesh.h"
+#include "../include/voxel_mesh.h"
 #include "raymath.h"
 
 BlockWorld * InitWorld(int maxWidth, int maxHeight, int tempBlockLevel)
