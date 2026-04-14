@@ -18,11 +18,13 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(raylib)
 
-add_executable(${PROJECT_NAME} main.c
-        world.c
-        world.h
-        voxel_mesh.c
-        voxel_mesh.h)
+add_executable(${PROJECT_NAME} src/main.c
+        src/world.c
+        include/world.h
+        src/voxel_mesh.c
+        include/voxel_mesh.h
+        src/player.c
+        include/player.h)
 
 # Include
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE})

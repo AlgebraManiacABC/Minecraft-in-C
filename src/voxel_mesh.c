@@ -2,7 +2,7 @@
 
 #include "raylib.h"
 #include "stdbool.h"
-#include "voxel_mesh.h"
+#include "../include/voxel_mesh.h"
 
 VoxelMesher * InitVoxelMesher(int triangles, bool useColors)
 {
@@ -91,7 +91,7 @@ void AddCube(VoxelMesher * mesher, Vector3 position, bool faces[6])
 	uvRect->y = 0;
 	uvRect->height = 1;
 	uvRect->width = 1;
-	SetColor(mesher, DARKGREEN);
+	SetColor(mesher, WHITE);
 
 	SetUV(mesher, 0,0);
 	//z-
