@@ -21,10 +21,19 @@ int main(void)
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
 
-    BlockWorld world;
-    world.maxWidth = 16;
-    world.maxHeight = 32;
-    world.tempBlockLevel = 16;
+    BlockWorld * world = InitWorld(16, 32, 16);
+    UpdateWorldMesh(world);
+
+    RenderTexture blockTextures = LoadRenderTexture(64, 16);
+    BeginTextureMode(blockTextures);
+    ClearBackground(BLANK);
+    DrawRectangle(0, 0, 16, 16, DARKBROWN);
+    DrawRectangle(16, 0, 16, 16, BROWN);
+    DrawRectangle(32, 0, 16, 16, GREEN);
+    DrawRectangle(48, 0, 16, 16, GOLD);
+    EndTextureMode();
+
+
 
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -53,7 +62,7 @@ int main(void)
 
         BeginMode3D(camera);
 
-        DrawWorld(&world);
+        DrawWorld(world, blockTextures);
 
         EndMode3D();
 
@@ -68,3 +77,4 @@ int main(void)
     CloseWindow();
     return 0;
 }
+
