@@ -36,7 +36,6 @@ int main(void)
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
-        ApplyPhysicsMain();
         UpdateCameraMain(&camera);
         RenderMain(camera, world, blockTextures);
         //----------------------------------------------------------------------------------
