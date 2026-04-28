@@ -7,6 +7,8 @@
 #define MINECRAFT_IN_C_WORLD_H
 #include "raylib.h"
 
+#define WORLD_UP ((Vector3){0,1,0})
+
 typedef struct BlockWorld
 {
     // Info about the block world

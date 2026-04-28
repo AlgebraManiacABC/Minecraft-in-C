@@ -1,0 +1,91 @@
+#include "../include/player.h"
+
+#include <math.h>
+#include <rcamera.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+struct Player
+{
+    Vector3 pos;
+    Vector3 vel;
+    float yaw;
+    float pitch;
+    bool flying;
+    float fov;
+};
+
+void PlayerMoveForward(Player * player, float distance);
+void PlayerMoveRight(Player * player, float distance);
+void PlayerMoveUp(Player * player, float distance);
+
+Player * InitPlayer(Vector3 initPos, float initYaw, float initPitch, float initFov)
+{
+    Player * player = calloc(1, sizeof(Player));
+    player->pos.x = initPos.x;
+    player->pos.y = initPos.y;
+    player->pos.z = initPos.z;
+    player->fov = initFov;
+    player->pitch = initPitch;
+    player->yaw = initYaw;
+    return player;
+}
+
+Camera CreateCamera(Player * player)
+{
+    Camera camera = {
+        .position = player->pos,
+        .target = player->pos,
+        .up = WORLD_UP,
+        .fovy = player->fov,
+        .projection = CAMERA_PERSPECTIVE
+    };
+    camera.target.z += 1; // Positive z is yaw == 0
+    CameraPitch(&camera, -player->pitch, true, false, false);
+    CameraYaw(&camera, -player->yaw, false);
+    printf("Camera target: (%.02f, %.02f, %.02f)\n",
+        camera.target.x, camera.target.y, camera.target.z);
+    return camera;
+}
+
+Camera GetPlayerCamera(Player * player)
+{
+    return CreateCamera(player);
+}
+
+void UpdatePlayer(Player * player, BlockWorld * world)
+{
+    float speed = 0.1f;
+    bool forward = IsKeyDown(KEY_W) || IsKeyDown(KEY_UP);
+    bool backward = IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN);
+    bool left = IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT);
+    bool right = IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT);
+    bool up = IsKeyDown(KEY_SPACE);
+    bool down = IsKeyDown(KEY_LEFT_SHIFT);
+
+    float sensitivity = 0.05f;
+    player->yaw += GetMouseDelta().x * sensitivity * DEG2RAD;
+    player->pitch += GetMouseDelta().y * sensitivity * DEG2RAD;
+
+    PlayerMoveForward(player, forward * speed - backward * speed);
+    PlayerMoveRight(player, right * speed - left * speed);
+    PlayerMoveUp(player, up * speed - down * speed);
+}
+
+void PlayerMoveForward(Player * player, float distance)
+{
+    player->pos.x += sin(player->yaw) * distance;
+    player->pos.z += cos(player->yaw) * distance;
+}
+
+void PlayerMoveRight(Player *player, float distance)
+{
+    player->pos.x += cos(player->yaw) * distance;
+    player->pos.z -= sin(player->yaw) * distance;
+}
+
+void PlayerMoveUp(Player *player, float distance)
+{
+    player->pos.y += distance;
+}
