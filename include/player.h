@@ -11,6 +11,8 @@ Player * InitPlayer(Vector3 initPos, float initYaw, float initPitch, float initF
 
 Camera GetPlayerCamera(Player *);
 
+Vector3 PlayerGetPosition(Player *);
+
 void UpdatePlayer(Player *, BlockWorld *);
 
 #endif

@@ -1,6 +1,7 @@
 #include "../include/player.h"
 
 #include <math.h>
+#include <raymath.h>
 #include <rcamera.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -52,6 +53,22 @@ Camera GetPlayerCamera(Player * player)
     return CreateCamera(player);
 }
 
+Vector3 PlayerGetPosition(Player * player)
+{
+    return player->pos;
+}
+
+Ray PlayerCreateMovementRay(Player * player, float forward, float up, float right)
+{
+    float x = forward * -sinf(player->yaw) + right * -cosf(player->yaw);
+    float y = up;
+    float z = forward * cosf(player->yaw) + right * -sinf(player->yaw);
+    return (Ray){
+        player->pos,
+        Vector3Normalize((Vector3){x, y, z})
+    };
+}
+
 void UpdatePlayer(Player * player, BlockWorld * world)
 {
     float speed = 0.1f;
@@ -66,9 +83,28 @@ void UpdatePlayer(Player * player, BlockWorld * world)
     player->yaw += GetMouseDelta().x * sensitivity * DEG2RAD;
     player->pitch += GetMouseDelta().y * sensitivity * DEG2RAD;
 
-    PlayerMoveForward(player, forward * speed - backward * speed);
-    PlayerMoveRight(player, right * speed - left * speed);
-    PlayerMoveUp(player, up * speed - down * speed);
+    if (!forward && !backward && !left && !right && !up && !down) return;
+
+    // PlayerMoveForward(player, forward * speed - backward * speed);
+    // PlayerMoveRight(player, right * speed - left * speed);
+    // PlayerMoveUp(player, up * speed - down * speed);
+    Ray toMove = PlayerCreateMovementRay(player,
+        forward - backward,
+        up - down,
+        right - left
+    );
+    RayCollision collide = GetRayCollisionMesh(toMove, *world->mesh, MatrixIdentity());
+    Vector3 dir = toMove.direction;
+    dir = Vector3Scale(dir, speed);
+    if (collide.hit && collide.distance <= Vector3Length(dir))
+    {
+        dir = Vector3Scale(dir, (collide.distance / Vector3Length(dir)) - 0.01f);
+        player->pos = Vector3Add(player->pos, dir);
+    }
+    else
+    {
+        player->pos = Vector3Add(player->pos, dir);
+    }
 }
 
 void PlayerMoveForward(Player * player, float distance)

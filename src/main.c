@@ -4,7 +4,7 @@
 #include "raylib.h"
 #include "../include/world.h"
 
-void RenderMain(Camera camera, BlockWorld * world, RenderTexture texture);
+void RenderMain(Player * player, BlockWorld * world, RenderTexture texture);
 
 int main(void)
 {
@@ -16,7 +16,7 @@ int main(void)
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
 
-    Player * player = InitPlayer((Vector3){8.0f, 17.0f, 8.0f}, 0, 0, 45.0f);
+    Player * player = InitPlayer((Vector3){-10.0f, 17.0f, -10.0f}, 0, 0, 45.0f);
 
     BlockWorld * world = InitWorld(16, 32, 16);
     UpdateWorldMesh(world);
@@ -31,7 +31,7 @@ int main(void)
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
         UpdatePlayer(player, world);
-        RenderMain(GetPlayerCamera(player), world, blockTextures);
+        RenderMain(player, world, blockTextures);
         //----------------------------------------------------------------------------------
     }
 
@@ -39,13 +39,13 @@ int main(void)
     return 0;
 }
 
-void RenderMain(Camera camera, BlockWorld * world, RenderTexture texture)
+void RenderMain(Player * player, BlockWorld * world, RenderTexture texture)
 {
     BeginDrawing();
 
     ClearBackground(RAYWHITE);
 
-    BeginMode3D(camera);
+    BeginMode3D(GetPlayerCamera(player));
 
     DrawWorld(world, texture);
 
@@ -54,6 +54,11 @@ void RenderMain(Camera camera, BlockWorld * world, RenderTexture texture)
     DrawText("Welcome to the third dimension!", 10, 40, 20, DARKGRAY);
 
     DrawFPS(10, 10);
+
+    char posStr[] = "Player position: ______, ______, ______";
+    Vector3 pos = PlayerGetPosition(player);
+    sprintf(posStr, "Player position: %03.02f, %03.02f, %03.02f", pos.x, pos.y, pos.z);
+    DrawText(posStr, 10, 60, 20, DARKBLUE);
 
     EndDrawing();
 }
