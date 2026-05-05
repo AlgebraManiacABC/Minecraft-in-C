@@ -44,8 +44,6 @@ Camera CreateCamera(Player * player)
     camera.target.z += 1; // Positive z is yaw == 0
     CameraPitch(&camera, -player->pitch, true, false, false);
     CameraYaw(&camera, -player->yaw, false);
-    printf("Camera target: (%.02f, %.02f, %.02f)\n",
-        camera.target.x, camera.target.y, camera.target.z);
     return camera;
 }
 
@@ -75,13 +73,13 @@ void UpdatePlayer(Player * player, BlockWorld * world)
 
 void PlayerMoveForward(Player * player, float distance)
 {
-    player->pos.x += sin(player->yaw) * distance;
+    player->pos.x -= sin(player->yaw) * distance;
     player->pos.z += cos(player->yaw) * distance;
 }
 
 void PlayerMoveRight(Player *player, float distance)
 {
-    player->pos.x += cos(player->yaw) * distance;
+    player->pos.x -= cos(player->yaw) * distance;
     player->pos.z -= sin(player->yaw) * distance;
 }
 

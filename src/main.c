@@ -49,8 +49,6 @@ void RenderMain(Camera camera, BlockWorld * world, RenderTexture texture)
 
     DrawWorld(world, texture);
 
-    DrawCube((Vector3){camera.target.x, camera.target.y, camera.target.z}, 0.5f, 0.5f, 0.5f, BLUE);
-
     EndMode3D();
 
     DrawText("Welcome to the third dimension!", 10, 40, 20, DARKGRAY);
