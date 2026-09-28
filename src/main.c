@@ -16,7 +16,7 @@ int main(void)
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
 
-    Player * player = InitPlayer((Vector3){-10.0f, 17.0f, -10.0f}, 0, 0, 45.0f);
+    Player * player = InitPlayer((Vector3){8.0f, 18.0f, 8.0f}, 0, 0, 45.0f);
 
     BlockWorld * world = InitWorld(16, 32, 16);
     UpdateWorldMesh(world);
