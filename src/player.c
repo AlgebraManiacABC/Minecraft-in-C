@@ -182,8 +182,8 @@ Vector3 PlayerGetVelocity(Player * player, PlayerMovement mov, float speed)
     }
     else if (mov.left)
     {
-        velocity.x -= cosf(player->yaw) * speed;
-        velocity.z -= sinf(player->yaw) * speed;
+        velocity.x += cosf(player->yaw) * speed;
+        velocity.z += sinf(player->yaw) * speed;
     }
 
     if (mov.up)
