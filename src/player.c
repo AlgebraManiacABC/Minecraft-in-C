@@ -18,6 +18,7 @@ struct Player
     float pitch;
     bool flying;
     float fov;
+    BoundingBox boundingBox;
 };
 
 typedef enum PlayerMovementDirection
@@ -44,6 +45,8 @@ Vector3 PlayerGetVelocity(Player * player, PlayerMovement mov, float speed);
 void PlayerMoveForward(Player * player, float distance);
 void PlayerMoveRight(Player * player, float distance);
 void PlayerMoveUp(Player * player, float distance);
+
+void UpdateBoundingBox(Player * player);
 
 Player * InitPlayer(Vector3 initPos, float initYaw, float initPitch, float initFov)
 {
@@ -114,19 +117,7 @@ void UpdatePlayer(Player * player, BlockWorld * world)
 
     if (!mov.forward && !mov.backward && !mov.left && !mov.right && !mov.up && !mov.down) return;
 
-    // Construct BoundingBox from (-, -, -) to (+, +, +), using player's feet as pos
-    BoundingBox playerBox = {
-        .min = {
-            player->pos.x - player->w / 2.0f,
-            player->pos.y,
-            player->pos.z - player->w / 2.0f
-        },
-        .max = {
-            player->pos.x + player->w / 2.0f,
-            player->pos.y + player->h,
-            player->pos.z + player->w / 2.0f
-        }
-    };
+    UpdateBoundingBox(player);
 
     BoundingBox worldBox = {
         .min = {0, 0, 0},
@@ -135,29 +126,38 @@ void UpdatePlayer(Player * player, BlockWorld * world)
 
     Vector3 velocity = PlayerGetVelocity(player, mov, speed);
     Vector3 posBeforeCollision = player->pos;
+
     player->pos.x += velocity.x;
-    if (CheckCollisionBoxes(playerBox, worldBox))
+    UpdateBoundingBox(player);
+    if (CheckCollisionBoxes(player->boundingBox, worldBox))
     {
         if (velocity.x > 0)
             player->pos.x = worldBox.min.x - player->w / 2.0f - EPSILON;
         else
             player->pos.x = worldBox.max.x + player->w / 2.0f + EPSILON;
+        UpdateBoundingBox(player);
     }
+
     player->pos.z += velocity.z;
-    if (CheckCollisionBoxes(playerBox, worldBox))
+    UpdateBoundingBox(player);
+    if (CheckCollisionBoxes(player->boundingBox, worldBox))
     {
         if (velocity.z > 0)
             player->pos.z = worldBox.min.z - player->w / 2.0f - EPSILON;
         else
             player->pos.z = worldBox.max.z + player->w / 2.0f + EPSILON;
+        UpdateBoundingBox(player);
     }
+
     player->pos.y += velocity.y;
-    if (CheckCollisionBoxes(playerBox, worldBox))
+    UpdateBoundingBox(player);
+    if (CheckCollisionBoxes(player->boundingBox, worldBox))
     {
         if (velocity.y > 0)
             player->pos.y = worldBox.min.y - player->h - EPSILON;
         else
             player->pos.y = worldBox.max.y + EPSILON;
+        UpdateBoundingBox(player);
     }
 }
 
@@ -212,4 +212,21 @@ void PlayerMoveRight(Player *player, float distance)
 void PlayerMoveUp(Player *player, float distance)
 {
     player->pos.y += distance;
+}
+
+void UpdateBoundingBox(Player * player) {
+    // Construct BoundingBox from (-, -, -) to (+, +, +), using player's feet as pos
+    BoundingBox playerBox = {
+        .min = {
+            player->pos.x - player->w / 2.0f,
+            player->pos.y,
+            player->pos.z - player->w / 2.0f
+        },
+        .max = {
+            player->pos.x + player->w / 2.0f,
+            player->pos.y + player->h,
+            player->pos.z + player->w / 2.0f
+        }
+    };
+    player->boundingBox = playerBox;
 }
