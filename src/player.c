@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <sys/types.h>
 
 struct Player
 {
@@ -19,6 +20,7 @@ struct Player
     bool flying;
     float fov;
     BoundingBox boundingBox;
+    Camera * camera;
 };
 
 typedef enum PlayerMovementDirection
@@ -52,42 +54,63 @@ static void UpdateBoundingBoxY(Player * player);
 static void UpdateBoundingBoxZ(Player * player);
 
 static void PlayerSetX(Player * player, float x);
+static void PlayerAddX(Player * player, float dx);
 static void PlayerSetY(Player * player, float y);
+static void PlayerAddY(Player * player, float dy);
 static void PlayerSetZ(Player * player, float z);
+static void PlayerAddZ(Player * player, float dz);
 
-Player * InitPlayer(Vector3 initPos, float initYaw, float initPitch, float initFov)
+static void PlayerSetYaw(Player * player, float yaw);
+static void PlayerAddYaw(Player * player, float dYaw);
+static void PlayerSetPitch(Player * player, float pitch);
+static void PlayerAddPitch(Player * player, float dPitch);
+
+Vector3 PlayerGetEyePosition(Player * player)
 {
-    Player * player = calloc(1, sizeof(Player));
-    player->h = 1.8f;
-    player->eyeh = 1.62f;
-    player->w = 0.6f;
-    player->fov = initFov;
-    player->pitch = initPitch;
-    player->yaw = initYaw;
-    PlayerSetX(player, initPos.x);
-    PlayerSetY(player, initPos.y);
-    PlayerSetZ(player, initPos.z);
-    return player;
+    return (Vector3){
+            .x = player->pos.x,
+            .y = player->pos.y + player->eyeh,
+            .z = player->pos.z
+    };
 }
 
-Camera CreateCamera(Player * player)
+Camera * CreateCamera(Player * player)
 {
-    Camera camera = {
-        .position = player->pos,
+    Camera * camera = calloc(1, sizeof(Camera));
+    *camera = (Camera) {
+        .position = PlayerGetEyePosition(player),
         .target = player->pos,
         .up = WORLD_UP,
         .fovy = player->fov,
         .projection = CAMERA_PERSPECTIVE
     };
-    camera.target.z += 1; // Positive z is yaw == 0
-    CameraPitch(&camera, -player->pitch, true, false, false);
-    CameraYaw(&camera, -player->yaw, false);
+    camera->target.z += 1; // Positive z is yaw == 0
+    CameraPitch(camera, -player->pitch, true, false, false);
+    CameraYaw(camera, -player->yaw, false);
     return camera;
 }
 
-Camera GetPlayerCamera(Player * player)
+Player * InitPlayer(Vector3 initPos, float initYaw, float initPitch, float initFov)
 {
-    return CreateCamera(player);
+    Player * player = calloc(1, sizeof(Player));
+    *player = (Player) {
+        .h = 1.8f,
+        .eyeh = 1.62f,
+        .w = 0.6f,
+        .fov = initFov,
+        .pitch = initPitch,
+        .yaw = initYaw
+    };
+    PlayerSetX(player, initPos.x);
+    PlayerSetY(player, initPos.y);
+    PlayerSetZ(player, initPos.z);
+    player->camera = CreateCamera(player);
+    return player;
+}
+
+Camera * GetPlayerCamera(Player * player)
+{
+    return player->camera;
 }
 
 Vector3 PlayerGetPosition(Player * player)
@@ -120,7 +143,9 @@ void UpdatePlayer(Player * player, BlockWorld * world)
 
     float sensitivity = 0.05f;
     player->yaw += GetMouseDelta().x * sensitivity * DEG2RAD;
+    PlayerSetYaw(player, player->yaw);
     player->pitch += GetMouseDelta().y * sensitivity * DEG2RAD;
+    PlayerSetPitch(player, player->pitch);
 
     if (!mov.forward && !mov.backward && !mov.left && !mov.right && !mov.up && !mov.down) return;
 
@@ -171,8 +196,8 @@ Vector3 PlayerGetVelocity(Player * player, PlayerMovement mov, float speed)
     }
     else if (mov.backward)
     {
-        velocity.x -= -(sinf(player->yaw) * speed);
-        velocity.z += -(cosf(player->yaw) * speed);
+        velocity.x += sinf(player->yaw) * speed;
+        velocity.z -= cosf(player->yaw) * speed;
     }
 
     if (mov.right)
@@ -252,4 +277,28 @@ static void UpdateBoundingBoxY(Player * player) {
 static void UpdateBoundingBoxZ(Player * player) {
     player->boundingBox.min.z = player->pos.z - player->w / 2.0f;
     player->boundingBox.max.z = player->pos.z + player->w / 2.0f;
+}
+
+static void PlayerSetYaw(Player * player, float yaw)
+{
+    player->yaw = yaw;
+    CameraYaw(player->camera, yaw - player->yaw, false);
+}
+
+static void PlayerAddYaw(Player * player, float dYaw)
+{
+    player->yaw += dYaw;
+    CameraYaw(player->camera, dYaw, false);
+}
+
+static void PlayerSetPitch(Player * player, float pitch)
+{
+    player->pitch = pitch;
+    CameraPitch(player->camera, pitch - player->pitch, true, false, false);
+}
+
+static void PlayerAddPitch(Player * player, float dPitch)
+{
+    player->pitch += dPitch;
+    CameraPitch(player->camera, dPitch, true, false, false);
 }

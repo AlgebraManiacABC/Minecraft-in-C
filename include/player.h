@@ -9,7 +9,7 @@ typedef struct Player Player;
 
 Player * InitPlayer(Vector3 initPos, float initYaw, float initPitch, float initFov);
 
-Camera GetPlayerCamera(Player *);
+Camera * GetPlayerCamera(Player *);
 
 Vector3 PlayerGetPosition(Player *);
 

@@ -45,7 +45,7 @@ void RenderMain(Player * player, BlockWorld * world, RenderTexture texture)
 
     ClearBackground(RAYWHITE);
 
-    BeginMode3D(GetPlayerCamera(player));
+    BeginMode3D(*GetPlayerCamera(player));
 
     DrawWorld(world, texture);
 
