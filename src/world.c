@@ -110,8 +110,8 @@ void UpdateWorldMesh(BlockWorld * world)
 
 void DrawWorld(BlockWorld * world, RenderTexture blockTextures)
 {
-    DrawCubeWires((Vector3){0,0,0},1,1,1,BLACK);
-    DrawCube((Vector3){0,0,0},1,1,1,RED);
+    // DrawCubeWires((Vector3){0,0,0},1,1,1,BLACK);
+    // DrawCube((Vector3){0,0,0},1,1,1,RED);
     Material mat = LoadMaterialDefault();
     mat.maps[0].color = WHITE;
     mat.maps[0].texture = blockTextures.texture;

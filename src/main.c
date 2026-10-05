@@ -1,9 +1,10 @@
 #include <stdio.h>
+
+#include "player.h"
 #include "raylib.h"
 #include "../include/world.h"
 
-void RenderMain(Camera camera, BlockWorld * world, RenderTexture texture);
-void UpdateCameraMain(Camera * camera);
+void RenderMain(Player * player, BlockWorld * world, RenderTexture texture);
 
 int main(void)
 {
@@ -11,18 +12,11 @@ int main(void)
     const int screenHeight = 450;
     InitWindow(screenWidth, screenHeight, "Hello raylib!");
 
-    Camera3D camera = { 0 };
-    camera.position = (Vector3){ 8.0f, 17.0f, 8.0f };  // Camera position
-    camera.target = (Vector3){ 0.0f, 0.0f, 0.0f };      // Camera looking at point
-    camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
-    camera.fovy = 45.0f;                                // Camera field-of-view Y
-    camera.projection = CAMERA_PERSPECTIVE;             // Camera mode type
-
-    Vector3 cubePosition = { 0.0f, 0.0f, 0.0f };
-
     DisableCursor();                // Disable cursor for camera movement
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+
+    Player * player = InitPlayer((Vector3){8.0f, 18.0f, 8.0f}, 0, 0, 45.0f);
 
     BlockWorld * world = InitWorld(16, 32, 16);
     UpdateWorldMesh(world);
@@ -36,8 +30,8 @@ int main(void)
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
-        UpdateCameraMain(&camera);
-        RenderMain(camera, world, blockTextures);
+        UpdatePlayer(player, world);
+        RenderMain(player, world, blockTextures);
         //----------------------------------------------------------------------------------
     }
 
@@ -45,13 +39,13 @@ int main(void)
     return 0;
 }
 
-void RenderMain(Camera camera, BlockWorld * world, RenderTexture texture)
+void RenderMain(Player * player, BlockWorld * world, RenderTexture texture)
 {
     BeginDrawing();
 
     ClearBackground(RAYWHITE);
 
-    BeginMode3D(camera);
+    BeginMode3D(*PlayerGetCamera(player));
 
     DrawWorld(world, texture);
 
@@ -61,24 +55,19 @@ void RenderMain(Camera camera, BlockWorld * world, RenderTexture texture)
 
     DrawFPS(10, 10);
 
-    EndDrawing();
-}
+    char posStr[] = "Player position: ______, ______, ______";
+    Vector3 pos = PlayerGetPosition(player);
+    sprintf(posStr, "Player position: %03.02f, %03.02f, %03.02f", pos.x, pos.y, pos.z);
+    DrawText(posStr, 10, 60, 20, DARKBLUE);
 
-void UpdateCameraMain(Camera * camera)
-{
-    UpdateCameraPro(camera,
-    (Vector3){
-        (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))*0.1f -      // Move forward-backward
-        (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN))*0.1f,
-        (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT))*0.1f -   // Move right-left
-        (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))*0.1f,
-        (IsKeyDown(KEY_SPACE) || IsKeyDown(KEY_SPACE))*0.1f -
-        (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_LEFT_SHIFT))*0.1f                                                // Move up-down
-    },
-    (Vector3){
-        GetMouseDelta().x*0.05f,                            // Rotation: yaw
-        GetMouseDelta().y*0.05f,                            // Rotation: pitch
-        0.0f                                                // Rotation: roll
-    },
-    0.0f);
+    char camPositionStr[] = "Camera position: ______, ______, ______";
+    char camTargetStr[] = "Camera target: ______, ______, ______";
+    Vector3 camPosition = PlayerGetCamera(player)->position;
+    Vector3 camTarget = PlayerGetCamera(player)->target;
+    sprintf(camPositionStr, "Camera position: %03.02f, %03.2f, %03.02f", camPosition.x, camPosition.y, camPosition.z);
+    sprintf(camTargetStr, "Camera target: %03.02f, %03.2f, %03.02f", camTarget.x, camTarget.y, camTarget.z);
+    DrawText(camPositionStr, 10, 80, 20, DARKBLUE);
+    DrawText(camTargetStr, 10, 100, 20, DARKBLUE);
+
+    EndDrawing();
 }

@@ -27,6 +27,6 @@ add_executable(${PROJECT_NAME} src/main.c
         include/player.h)
 
 # Include
-target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE})
+target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE} "include")
 # Link
 target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
