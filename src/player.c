@@ -132,7 +132,6 @@ void UpdatePlayer(Player * player, BlockWorld * world)
     };
 
     Vector3 velocity = PlayerGetVelocity(player, mov, speed);
-    Vector3 posBeforeCollision = player->pos;
 
     PlayerSetX(player, player->pos.x + velocity.x);
     if (CheckCollisionBoxes(player->boundingBox, worldBox))
