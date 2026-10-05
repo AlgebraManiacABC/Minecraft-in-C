@@ -101,14 +101,15 @@ Player * InitPlayer(Vector3 initPos, float initYaw, float initPitch, float initF
         .pitch = initPitch,
         .yaw = initYaw
     };
-    PlayerSetX(player, initPos.x);
-    PlayerSetY(player, initPos.y);
-    PlayerSetZ(player, initPos.z);
+    player->pos.x = initPos.x;
+    player->pos.y = initPos.y;
+    player->pos.z = initPos.z;
+    UpdateBoundingBox(player);
     player->camera = CreateCamera(player);
     return player;
 }
 
-Camera * GetPlayerCamera(Player * player)
+Camera * PlayerGetCamera(Player * player)
 {
     return player->camera;
 }
@@ -142,10 +143,8 @@ void UpdatePlayer(Player * player, BlockWorld * world)
     };
 
     float sensitivity = 0.05f;
-    player->yaw += GetMouseDelta().x * sensitivity * DEG2RAD;
-    PlayerSetYaw(player, player->yaw);
-    player->pitch += GetMouseDelta().y * sensitivity * DEG2RAD;
-    PlayerSetPitch(player, player->pitch);
+    PlayerAddYaw(player, GetMouseDelta().x * sensitivity * DEG2RAD);
+    PlayerAddPitch(player, GetMouseDelta().y * sensitivity * DEG2RAD);
 
     if (!mov.forward && !mov.backward && !mov.left && !mov.right && !mov.up && !mov.down) return;
 
@@ -157,6 +156,7 @@ void UpdatePlayer(Player * player, BlockWorld * world)
     };
 
     Vector3 velocity = PlayerGetVelocity(player, mov, speed);
+    Vector3 curPos = player->pos;
 
     PlayerSetX(player, player->pos.x + velocity.x);
     if (CheckCollisionBoxes(player->boundingBox, worldBox))
@@ -226,26 +226,29 @@ void PlayerMoveForward(Player * player, float distance)
 {
     PlayerSetX(player, player->pos.x - sinf(player->yaw) * distance);
     PlayerSetZ(player, player->pos.z + cosf(player->yaw) * distance);
-    // player->pos.x -= sinf(player->yaw) * distance;
-    // player->pos.z += cosf(player->yaw) * distance;
 }
 
 void PlayerMoveRight(Player *player, float distance)
 {
     PlayerSetX(player, player->pos.x - cosf(player->yaw) * distance);
     PlayerSetZ(player, player->pos.z - sinf(player->yaw) * distance);
-    // player->pos.x -= cosf(player->yaw) * distance;
-    // player->pos.z -= sinf(player->yaw) * distance;
 }
 
 void PlayerMoveUp(Player *player, float distance)
 {
     PlayerSetY(player, player->pos.y + distance);
-    // player->pos.y += distance;
 }
 static void PlayerSetX(Player * player, float x) {
-    player->pos.x = x;
+    float dx = x - player->pos.x;
+    PlayerAddX(player, dx);
+}
+
+static void PlayerAddX(Player * player, float dx)
+{
+    player->pos.x += dx;
     UpdateBoundingBoxX(player);
+    player->camera->position.x += dx;
+    player->camera->target.x += dx;
 }
 
 static void PlayerSetY(Player * player, float y) {
@@ -253,9 +256,25 @@ static void PlayerSetY(Player * player, float y) {
     UpdateBoundingBoxY(player);
 }
 
+static void PlayerAddY(Player * player, float dy)
+{
+    player->pos.y += dy;
+    UpdateBoundingBoxY(player);
+    player->camera->position.y += dy;
+    player->camera->target.y += dy;
+}
+
 static void PlayerSetZ(Player * player, float z) {
     player->pos.z = z;
     UpdateBoundingBoxZ(player);
+}
+
+static void PlayerAddZ(Player * player, float dz)
+{
+    player->pos.z += dz;
+    UpdateBoundingBoxZ(player);
+    player->camera->position.z += dz;
+    player->camera->target.z += dz;
 }
 
 void UpdateBoundingBox(Player * player) {
@@ -288,7 +307,7 @@ static void PlayerSetYaw(Player * player, float yaw)
 static void PlayerAddYaw(Player * player, float dYaw)
 {
     player->yaw += dYaw;
-    CameraYaw(player->camera, dYaw, false);
+    CameraYaw(player->camera, -dYaw, false);
 }
 
 static void PlayerSetPitch(Player * player, float pitch)
@@ -300,5 +319,5 @@ static void PlayerSetPitch(Player * player, float pitch)
 static void PlayerAddPitch(Player * player, float dPitch)
 {
     player->pitch += dPitch;
-    CameraPitch(player->camera, dPitch, true, false, false);
+    CameraPitch(player->camera, -dPitch, true, false, false);
 }

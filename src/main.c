@@ -45,7 +45,7 @@ void RenderMain(Player * player, BlockWorld * world, RenderTexture texture)
 
     ClearBackground(RAYWHITE);
 
-    BeginMode3D(*GetPlayerCamera(player));
+    BeginMode3D(*PlayerGetCamera(player));
 
     DrawWorld(world, texture);
 
@@ -59,6 +59,15 @@ void RenderMain(Player * player, BlockWorld * world, RenderTexture texture)
     Vector3 pos = PlayerGetPosition(player);
     sprintf(posStr, "Player position: %03.02f, %03.02f, %03.02f", pos.x, pos.y, pos.z);
     DrawText(posStr, 10, 60, 20, DARKBLUE);
+
+    char camPositionStr[] = "Camera position: ______, ______, ______";
+    char camTargetStr[] = "Camera target: ______, ______, ______";
+    Vector3 camPosition = PlayerGetCamera(player)->position;
+    Vector3 camTarget = PlayerGetCamera(player)->target;
+    sprintf(camPositionStr, "Camera position: %03.02f, %03.2f, %03.02f", camPosition.x, camPosition.y, camPosition.z);
+    sprintf(camTargetStr, "Camera target: %03.02f, %03.2f, %03.02f", camTarget.x, camTarget.y, camTarget.z);
+    DrawText(camPositionStr, 10, 80, 20, DARKBLUE);
+    DrawText(camTargetStr, 10, 100, 20, DARKBLUE);
 
     EndDrawing();
 }
