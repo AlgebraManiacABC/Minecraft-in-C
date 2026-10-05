@@ -156,9 +156,8 @@ void UpdatePlayer(Player * player, BlockWorld * world)
     };
 
     Vector3 velocity = PlayerGetVelocity(player, mov, speed);
-    Vector3 curPos = player->pos;
 
-    PlayerSetX(player, player->pos.x + velocity.x);
+    PlayerAddX(player, velocity.x);
     if (CheckCollisionBoxes(player->boundingBox, worldBox))
     {
         if (velocity.x > 0)
@@ -167,7 +166,7 @@ void UpdatePlayer(Player * player, BlockWorld * world)
             PlayerSetX(player, worldBox.max.x + player->w / 2.0f + EPSILON);
     }
 
-    PlayerSetZ(player, player->pos.z + velocity.z);
+    PlayerAddZ(player, velocity.z);
     if (CheckCollisionBoxes(player->boundingBox, worldBox))
     {
         if (velocity.z > 0)
@@ -176,7 +175,7 @@ void UpdatePlayer(Player * player, BlockWorld * world)
             PlayerSetZ(player, worldBox.max.z + player->w / 2.0f + EPSILON);
     }
 
-    PlayerSetY(player, player->pos.y + velocity.y);
+    PlayerAddY(player, velocity.y);
     if (CheckCollisionBoxes(player->boundingBox, worldBox))
     {
         if (velocity.y > 0)
@@ -252,8 +251,8 @@ static void PlayerAddX(Player * player, float dx)
 }
 
 static void PlayerSetY(Player * player, float y) {
-    player->pos.y = y;
-    UpdateBoundingBoxY(player);
+    float dy = y - player->pos.y;
+    PlayerAddY(player, dy);
 }
 
 static void PlayerAddY(Player * player, float dy)
@@ -265,8 +264,8 @@ static void PlayerAddY(Player * player, float dy)
 }
 
 static void PlayerSetZ(Player * player, float z) {
-    player->pos.z = z;
-    UpdateBoundingBoxZ(player);
+    float dz = z - player->pos.z;
+    PlayerAddZ(player, dz);
 }
 
 static void PlayerAddZ(Player * player, float dz)
