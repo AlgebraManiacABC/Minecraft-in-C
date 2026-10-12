@@ -24,7 +24,9 @@ add_executable(${PROJECT_NAME} src/main.c
         src/voxel_mesh.c
         include/voxel_mesh.h
         src/player.c
-        include/player.h)
+        include/player.h
+        src/list.c
+        include/list.h)
 
 # Include
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE} "include")

@@ -9,19 +9,33 @@
 
 #define WORLD_UP ((Vector3){0,1,0})
 
-typedef struct BlockWorld
+typedef struct BlockChunk
 {
-    // Info about the block world
-    int maxHeight;
-    int maxWidth; // For now, limited
-
-    int tempBlockLevel; // The height to which to generate blocks
+    int x, z; // Chunk coordinates (real / CHUNK_W/H)
+    int tempBlockLevel; // The height up to which to generate blocks
 
     Mesh * mesh;
 
+    struct BlockChunk *n, *w, *e, *s;
+
+} BlockChunk;
+
+typedef struct BlockWorld
+{
+    // Info about the block world
+    int chunkHeight;
+    int chunkWidth;
+
+    BlockChunk * spawnChunk;
+
 }   BlockWorld;
 
-BlockWorld * InitWorld(int maxWidth, int maxHeight, int tempBlockLevel);
+/**
+ * Creates a new BlockWorld
+ * @param radius The number of chunks beyond the spawn chunk to generate
+ * @return The new BlockWorld
+ */
+BlockWorld * InitWorld(int radius);
 
 void UpdateWorldMesh(BlockWorld * world);
 

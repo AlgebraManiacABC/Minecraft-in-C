@@ -1,4 +1,5 @@
 #include "../include/world.h"
+#include "../include/list.h"
 
 #include <stdlib.h>
 
@@ -6,30 +7,79 @@
 #include "../include/voxel_mesh.h"
 #include "raymath.h"
 
-BlockWorld * InitWorld(int maxWidth, int maxHeight, int tempBlockLevel)
+#define CHUNK_WIDTH (16)
+#define CHUNK_HEIGHT (32)
+#define TEMP_BLOCK_LEVEL (16)
+
+BlockChunk * InitChunk(BlockChunk *n, BlockChunk *e,
+                       BlockChunk *s, BlockChunk *w)
+{
+    BlockChunk * chunk = malloc(sizeof(BlockChunk));
+    if (!chunk) return NULL;
+    chunk->tempBlockLevel = TEMP_BLOCK_LEVEL;
+    if ((chunk->n = n)) n->s = chunk;
+    if ((chunk->e = e)) e->w = chunk;
+    if ((chunk->s = s)) s->n = chunk;
+    if ((chunk->w = w)) w->e = chunk;
+    return chunk;
+}
+
+void SpreadSpawn(BlockChunk * chunk, int x, int z, int radius)
+{
+    if (!chunk) return;
+    if (x < radius && !(chunk->w))
+    {
+        BlockChunk * w = InitChunk(NULL, chunk, NULL, NULL);
+        SpreadSpawn(w, x + 1, z, radius);
+    }
+    if (x > -radius && !(chunk->e))
+    {
+        BlockChunk * e = InitChunk(NULL, NULL, NULL, chunk);
+        SpreadSpawn(e, x - 1, z, radius);
+    }
+    if (z < radius && !(chunk->s))
+    {
+        BlockChunk * s = InitChunk(NULL, NULL, chunk, NULL);
+        SpreadSpawn(s, x, z + 1, radius);
+    }
+    if (z > radius && !(chunk->n))
+    {
+        BlockChunk * n = InitChunk(chunk, NULL, NULL, NULL);
+        SpreadSpawn(n, x, z - 1, radius);
+    }
+}
+
+BlockWorld * InitWorld(int radius)
 {
     BlockWorld * world = malloc(sizeof(BlockWorld));
-    world->maxWidth = maxWidth;
-    world->maxHeight = maxHeight;
-    world->tempBlockLevel = tempBlockLevel;
-    world->mesh = NULL;
+    if (!world) return NULL;
+    world->chunkWidth = CHUNK_WIDTH;
+    world->chunkHeight = CHUNK_HEIGHT;
+
+    world->spawnChunk = InitChunk(NULL, NULL, NULL, NULL);
+    List_t * q = createList();
+    insertNodeAtTail(q, world->spawnChunk);
+    while (!listIsEmpty(q))
+        BlockChunk
+    SpreadSpawn(world->spawnChunk, 0, 0, radius);
+
     return world;
 }
 
 bool BlockIsSolid(BlockWorld * world, int x, int y, int z)
 {
-    if (x < 0 || x >= world->maxWidth) return false;
+    if (x < 0 || x >= world->chunkWidth) return false;
     if (y < 0 || y >= world->tempBlockLevel) return false;
-    if (z < 0 || z >= world->maxWidth) return false;
+    if (z < 0 || z >= world->chunkWidth) return false;
     return true;
 }
 
 int GetFacesInWorld(BlockWorld * world)
 {
     int count = 0;
-    for (int x = 0; x < world->maxWidth; x++)
+    for (int x = 0; x < world->chunkWidth; x++)
     {
-        for (int z = 0; z < world->maxWidth; z++)
+        for (int z = 0; z < world->chunkWidth; z++)
         {
             for (int y = 0; y < world->tempBlockLevel; y++)
             {
@@ -69,9 +119,9 @@ void UpdateWorldMesh(BlockWorld * world)
         world->mesh = NULL;
     }
     VoxelMesher * mesher = InitVoxelMesher(faceCount * 2, true);
-    for (int x=0; x < world->maxWidth; x++)
+    for (int x=0; x < world->chunkWidth; x++)
     {
-        for (int z=0; z < world->maxWidth; z++)
+        for (int z=0; z < world->chunkWidth; z++)
         {
             for (int y=0; y < world->tempBlockLevel; y++)
             {
