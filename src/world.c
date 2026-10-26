@@ -7,46 +7,31 @@
 #include "../include/voxel_mesh.h"
 #include "raymath.h"
 
-#define CHUNK_WIDTH (16)
 #define CHUNK_HEIGHT (32)
 #define TEMP_BLOCK_LEVEL (16)
 
-BlockChunk * InitChunk(BlockChunk *n, BlockChunk *e,
-                       BlockChunk *s, BlockChunk *w)
+int ChunkCompareCoords(const struct rb_node * n, const void * key)
+{
+    const BlockChunk * chunk = (BlockChunk *)n;
+    Coordinates_t coords = *(Coordinates_t*)key;
+    return chunk->coords.xz - coords.xz;
+}
+
+int ChunkCompareChunk(const struct rb_node *n1, const struct rb_node *n2)
+{
+    const BlockChunk * chunk1 = (BlockChunk *)n1;
+    const BlockChunk * chunk2 = (BlockChunk *)n2;
+    return chunk1->coords.xz - chunk2->coords.xz;
+}
+
+BlockChunk * InitChunk(int x, int z)
 {
     BlockChunk * chunk = malloc(sizeof(BlockChunk));
     if (!chunk) return NULL;
     chunk->tempBlockLevel = TEMP_BLOCK_LEVEL;
-    if ((chunk->n = n)) n->s = chunk;
-    if ((chunk->e = e)) e->w = chunk;
-    if ((chunk->s = s)) s->n = chunk;
-    if ((chunk->w = w)) w->e = chunk;
+    chunk->coords.x = x;
+    chunk->coords.z = z;
     return chunk;
-}
-
-void SpreadSpawn(BlockChunk * chunk, int x, int z, int radius)
-{
-    if (!chunk) return;
-    if (x < radius && !(chunk->w))
-    {
-        BlockChunk * w = InitChunk(NULL, chunk, NULL, NULL);
-        SpreadSpawn(w, x + 1, z, radius);
-    }
-    if (x > -radius && !(chunk->e))
-    {
-        BlockChunk * e = InitChunk(NULL, NULL, NULL, chunk);
-        SpreadSpawn(e, x - 1, z, radius);
-    }
-    if (z < radius && !(chunk->s))
-    {
-        BlockChunk * s = InitChunk(NULL, NULL, chunk, NULL);
-        SpreadSpawn(s, x, z + 1, radius);
-    }
-    if (z > radius && !(chunk->n))
-    {
-        BlockChunk * n = InitChunk(chunk, NULL, NULL, NULL);
-        SpreadSpawn(n, x, z - 1, radius);
-    }
 }
 
 BlockWorld * InitWorld(int radius)
@@ -56,97 +41,99 @@ BlockWorld * InitWorld(int radius)
     world->chunkWidth = CHUNK_WIDTH;
     world->chunkHeight = CHUNK_HEIGHT;
 
-    world->spawnChunk = InitChunk(NULL, NULL, NULL, NULL);
-    List_t * q = createList();
-    insertNodeAtTail(q, world->spawnChunk);
-    while (!listIsEmpty(q))
-        BlockChunk
-    SpreadSpawn(world->spawnChunk, 0, 0, radius);
+    rb_tree_init(world->chunks);
+    for (int x = -radius+1; x < radius; x++)
+    {
+        for (int z = -radius+1; z < radius; z++)
+        {
+            BlockChunk * chunkToInsert = InitChunk(x, z);
+            rb_tree_insert(world->chunks, (struct rb_node *)chunkToInsert, ChunkCompareChunk);
+        }
+    }
 
     return world;
 }
 
-bool BlockIsSolid(BlockWorld * world, int x, int y, int z)
+bool BlockIsSolid(BlockChunk * chunk, int x, int y, int z)
 {
-    if (x < 0 || x >= world->chunkWidth) return false;
-    if (y < 0 || y >= world->tempBlockLevel) return false;
-    if (z < 0 || z >= world->chunkWidth) return false;
+    if (x < 0 || x >= CHUNK_WIDTH) return false;
+    if (y < 0 || y >= chunk->tempBlockLevel) return false;
+    if (z < 0 || z >= CHUNK_WIDTH) return false;
     return true;
 }
 
-int GetFacesInWorld(BlockWorld * world)
+int GetFacesInChunk(BlockChunk * chunk)
 {
     int count = 0;
-    for (int x = 0; x < world->chunkWidth; x++)
+    for (int x = 0; x < CHUNK_WIDTH; x++)
     {
-        for (int z = 0; z < world->chunkWidth; z++)
+        for (int z = 0; z < CHUNK_WIDTH; z++)
         {
-            for (int y = 0; y < world->tempBlockLevel; y++)
+            for (int y = 0; y < CHUNK_HEIGHT; y++)
             {
-                if (!BlockIsSolid(world, x,y,z))
+                if (!BlockIsSolid(chunk, x,y,z))
                     continue;
 
-                if (!BlockIsSolid(world, x+1, y, z))
+                if (!BlockIsSolid(chunk, x+1, y, z))
                     count++;
 
-                if (!BlockIsSolid(world, x-1,y,z))
+                if (!BlockIsSolid(chunk, x-1,y,z))
                     count++;
 
-                if (!BlockIsSolid(world, x,y+1,z))
+                if (!BlockIsSolid(chunk, x,y+1,z))
                     count++;
 
-                if (!BlockIsSolid(world, x,y-1,z))
+                if (!BlockIsSolid(chunk, x,y-1,z))
                     count++;
 
-                if (!BlockIsSolid(world, x,y,z+1))
+                if (!BlockIsSolid(chunk, x,y,z+1))
                     count++;
 
-                if (!BlockIsSolid(world, x,y,z-1))
+                if (!BlockIsSolid(chunk, x,y,z-1))
                     count++;
             }
         }
     }
-
     return count;
 }
 
-void UpdateWorldMesh(BlockWorld * world)
+void UpdateChunkMesh(BlockChunk * chunk)
 {
-    int faceCount = GetFacesInWorld(world);
-    if (world->mesh)
+    int faceCount = GetFacesInChunk(chunk);
+    if (chunk->mesh)
     {
-        UnloadMesh(*world->mesh);
-        world->mesh = NULL;
+        UnloadMesh(*chunk->mesh);
+        chunk->mesh = NULL;
     }
     VoxelMesher * mesher = InitVoxelMesher(faceCount * 2, true);
-    for (int x=0; x < world->chunkWidth; x++)
+    for (int x=0; x < CHUNK_WIDTH; x++)
     {
-        for (int z=0; z < world->chunkWidth; z++)
+        for (int z=0; z < CHUNK_WIDTH; z++)
         {
-            for (int y=0; y < world->tempBlockLevel; y++)
+            for (int y=0; y < chunk->tempBlockLevel; y++)
             {
-                if (!BlockIsSolid(world, x, y, z))
+                if (!BlockIsSolid(chunk, x, y, z))
                     continue;
 
                 // build up the list of faces that this block needs
                 bool faces[6] = { false, false, false, false, false, false };
 
-                if (!BlockIsSolid(world, x+1, y, z))
+                if (!BlockIsSolid(chunk, x+1, y, z))
                     faces[WEST] = true;
 
-                if (!BlockIsSolid(world, x-1, y, z))
+                if (!BlockIsSolid(chunk, x-1, y, z))
                     faces[EAST] = true;
 
-                if (!BlockIsSolid(world, x, y+1, z))
+                if (!BlockIsSolid(chunk, x, y+1, z))
                     faces[UP] = true;
 
-                if (!BlockIsSolid(world, x, y-1, z))
+                if (!BlockIsSolid(chunk, x, y-1, z))
                     faces[DOWN] = true;
 
-                if (!BlockIsSolid(world, x, y, z+1))
+                if (!BlockIsSolid(chunk, x, y, z+1))
                     faces[SOUTH] = true;
 
-                if (!BlockIsSolid(world, x, y, z-1))
+                if (!BlockIsSolid(chunk, x, y, z-1))
                     faces[NORTH] = true;
 
                 // build the faces that hit open air for this voxel block
@@ -155,7 +142,20 @@ void UpdateWorldMesh(BlockWorld * world)
         }
     }
     UploadMesh(mesher->mesh, false);
-    world->mesh = FinalizeMesh(mesher);
+    chunk->mesh = FinalizeMesh(mesher);
+}
+
+void UpdateWorldMesh(BlockWorld * world)
+{
+    rb_tree_foreach(BlockChunk, chunk, world->chunks, node)
+    {
+        UpdateChunkMesh(chunk);
+    }
+}
+
+void DrawChunk(BlockChunk * chunk, Material mat)
+{
+    DrawMesh(*chunk->mesh, mat, MatrixIdentity());
 }
 
 void DrawWorld(BlockWorld * world, RenderTexture blockTextures)
@@ -165,5 +165,8 @@ void DrawWorld(BlockWorld * world, RenderTexture blockTextures)
     Material mat = LoadMaterialDefault();
     mat.maps[0].color = WHITE;
     mat.maps[0].texture = blockTextures.texture;
-    DrawMesh(*world->mesh, mat, MatrixIdentity());
+    rb_tree_foreach(BlockChunk, chunk, world->chunks, node)
+    {
+        DrawChunk(chunk, mat);
+    }
 }

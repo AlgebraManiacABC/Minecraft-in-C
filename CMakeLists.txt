@@ -26,7 +26,9 @@ add_executable(${PROJECT_NAME} src/main.c
         src/player.c
         include/player.h
         src/list.c
-        include/list.h)
+        include/list.h
+        src/tree.c
+        include/tree.h)
 
 # Include
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE} "include")

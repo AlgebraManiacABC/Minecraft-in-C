@@ -150,9 +150,14 @@ void UpdatePlayer(Player * player, BlockWorld * world)
 
     UpdateBoundingBox(player);
 
+    int chunkX = player->pos.x / CHUNK_WIDTH;
+    int chunkZ = player->pos.z / CHUNK_WIDTH;
+    Coordinates_t coords = (Coordinates_t){.x = chunkX, .z = chunkZ};
+    BlockChunk * playerChunk = (BlockChunk*)rb_tree_search(world->chunks, &coords, ChunkCompareCoords);
+
     BoundingBox worldBox = {
         .min = {0, 0, 0},
-        .max = {world->chunkWidth, world->tempBlockLevel, world->chunkWidth}
+        .max = {CHUNK_WIDTH, playerChunk->tempBlockLevel, CHUNK_WIDTH}
     };
 
     Vector3 velocity = PlayerGetVelocity(player, mov, speed);
