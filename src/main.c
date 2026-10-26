@@ -18,7 +18,7 @@ int main(void)
 
     Player * player = InitPlayer((Vector3){8.0f, 18.0f, 8.0f}, 0, 0, 45.0f);
 
-    BlockWorld * world = InitWorld(16, 32, 16);
+    BlockWorld * world = InitWorld(2);
     UpdateWorldMesh(world);
 
     RenderTexture blockTextures = LoadRenderTexture(1, 1);

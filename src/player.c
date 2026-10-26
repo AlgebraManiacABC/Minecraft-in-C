@@ -152,7 +152,7 @@ void UpdatePlayer(Player * player, BlockWorld * world)
 
     BoundingBox worldBox = {
         .min = {0, 0, 0},
-        .max = {world->maxWidth, world->tempBlockLevel, world->maxWidth}
+        .max = {world->chunkWidth, world->tempBlockLevel, world->chunkWidth}
     };
 
     Vector3 velocity = PlayerGetVelocity(player, mov, speed);
