@@ -41,6 +41,7 @@ BlockWorld * InitWorld(int radius)
     world->chunkWidth = CHUNK_WIDTH;
     world->chunkHeight = CHUNK_HEIGHT;
 
+    world->chunks = malloc(sizeof(struct rb_tree));
     rb_tree_init(world->chunks);
     for (int x = -radius+1; x < radius; x++)
     {
