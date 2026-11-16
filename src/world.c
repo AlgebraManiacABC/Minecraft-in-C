@@ -162,7 +162,11 @@ static Vector3 GetChunkTranslationVector(BlockChunk const * chunk)
 
 void DrawChunk(BlockChunk * chunk, Material mat)
 {
-    DrawMesh(*chunk->mesh, mat, MatrixIdentity());
+    Matrix t = MatrixCompose(
+        GetChunkTranslationVector(chunk),
+        QuaternionIdentity(),
+        (Vector3){1,1,1});
+    DrawMesh(*chunk->mesh, mat, t);
 }
 
 void DrawWorld(BlockWorld * world, RenderTexture blockTextures)
