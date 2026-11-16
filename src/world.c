@@ -31,6 +31,7 @@ BlockChunk * InitChunk(int x, int z)
     chunk->tempBlockLevel = TEMP_BLOCK_LEVEL;
     chunk->coords.x = x;
     chunk->coords.z = z;
+    chunk->mesh = NULL;
     return chunk;
 }
 
@@ -48,7 +49,7 @@ BlockWorld * InitWorld(int radius)
         for (int z = -radius+1; z < radius; z++)
         {
             BlockChunk * chunkToInsert = InitChunk(x, z);
-            rb_tree_insert(world->chunks, (struct rb_node *)chunkToInsert, ChunkCompareChunk);
+            rb_tree_insert(world->chunks, &(chunkToInsert->node), ChunkCompareChunk);
         }
     }
 
@@ -152,6 +153,11 @@ void UpdateWorldMesh(BlockWorld * world)
     {
         UpdateChunkMesh(chunk);
     }
+}
+
+static Vector3 GetChunkTranslationVector(BlockChunk const * chunk)
+{
+    return (Vector3) {.x = chunk->coords.x * 16, .y = 0, .z = chunk->coords.z * 16};
 }
 
 void DrawChunk(BlockChunk * chunk, Material mat)
