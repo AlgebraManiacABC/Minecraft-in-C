@@ -1,4 +1,7 @@
 #include "../include/world.h"
+
+#include <stdio.h>
+
 #include "../include/list.h"
 
 #include <stdlib.h>
@@ -6,9 +9,6 @@
 #include "raylib.h"
 #include "../include/voxel_mesh.h"
 #include "raymath.h"
-
-#define CHUNK_HEIGHT (32)
-#define TEMP_BLOCK_LEVEL (16)
 
 int ChunkCompareCoords(const struct rb_node * n, const void * key)
 {
@@ -24,14 +24,40 @@ int ChunkCompareChunk(const struct rb_node *n1, const struct rb_node *n2)
     return chunk1->coords.xz - chunk2->coords.xz;
 }
 
+const char * GetBlockName(BlockType_t type)
+{
+    switch (type)
+    {
+        case BLOCK_AIR: return "Air";
+        case BLOCK_STONE: return "Stone";
+        case BLOCK_DIRT: return "Dirt";
+        case BLOCK_GRASS: return "Grass";
+        default: return "Unknown";
+    }
+}
+
 BlockChunk * InitChunk(int x, int z)
 {
     BlockChunk * chunk = malloc(sizeof(BlockChunk));
     if (!chunk) return NULL;
-    chunk->tempBlockLevel = TEMP_BLOCK_LEVEL;
+    chunk->tempSeaLevel = 16;
     chunk->coords.x = x;
     chunk->coords.z = z;
     chunk->mesh = NULL;
+    for (int bx = 0; bx < CHUNK_WIDTH; bx++)
+    {
+        for (int bz = 0; bz < CHUNK_WIDTH; bz++)
+        {
+            for (int by = MIN_BUILD_HEIGHT; by < chunk->tempSeaLevel; by++)
+            {
+                BlockType_t next = (rand() / (float)RAND_MAX) * BLOCK_TYPE_COUNT;
+                chunk->blocks[bx][bz][by] = next;
+                // printf("Block %s was created at %d, %d, %d in chunk %d, %d\n",
+                //     GetBlockName(next), bx, by, bz, chunk->coords.x, chunk->coords.z);
+
+            }
+        }
+    }
     return chunk;
 }
 
@@ -39,8 +65,6 @@ BlockWorld * InitWorld(int radius)
 {
     BlockWorld * world = malloc(sizeof(BlockWorld));
     if (!world) return NULL;
-    world->chunkWidth = CHUNK_WIDTH;
-    world->chunkHeight = CHUNK_HEIGHT;
 
     world->chunks = malloc(sizeof(struct rb_tree));
     rb_tree_init(world->chunks);
@@ -59,9 +83,9 @@ BlockWorld * InitWorld(int radius)
 bool BlockIsSolid(BlockChunk * chunk, int x, int y, int z)
 {
     if (x < 0 || x >= CHUNK_WIDTH) return false;
-    if (y < 0 || y >= chunk->tempBlockLevel) return false;
+    if (y < 0 || y >= chunk->tempSeaLevel) return false;
     if (z < 0 || z >= CHUNK_WIDTH) return false;
-    return true;
+    return chunk->blocks[x][z][y] != BLOCK_AIR;
 }
 
 int GetFacesInChunk(BlockChunk * chunk)
@@ -71,7 +95,7 @@ int GetFacesInChunk(BlockChunk * chunk)
     {
         for (int z = 0; z < CHUNK_WIDTH; z++)
         {
-            for (int y = 0; y < CHUNK_HEIGHT; y++)
+            for (int y = MIN_BUILD_HEIGHT; y < MAX_BUILD_HEIGHT; y++)
             {
                 if (!BlockIsSolid(chunk, x,y,z))
                     continue;
@@ -112,7 +136,7 @@ void UpdateChunkMesh(BlockChunk * chunk)
     {
         for (int z=0; z < CHUNK_WIDTH; z++)
         {
-            for (int y=0; y < chunk->tempBlockLevel; y++)
+            for (int y=0; y < chunk->tempSeaLevel; y++)
             {
                 if (!BlockIsSolid(chunk, x, y, z))
                     continue;
@@ -157,7 +181,11 @@ void UpdateWorldMesh(BlockWorld * world)
 
 static Vector3 GetChunkTranslationVector(BlockChunk const * chunk)
 {
-    return (Vector3) {.x = chunk->coords.x * 16, .y = 0, .z = chunk->coords.z * 16};
+    return (Vector3) {
+        .x = chunk->coords.x * CHUNK_WIDTH,
+        .y = chunk->coords.x,
+        .z = chunk->coords.z * CHUNK_WIDTH
+    };
 }
 
 void DrawChunk(BlockChunk * chunk, Material mat)
@@ -171,8 +199,6 @@ void DrawChunk(BlockChunk * chunk, Material mat)
 
 void DrawWorld(BlockWorld * world, RenderTexture blockTextures)
 {
-    // DrawCubeWires((Vector3){0,0,0},1,1,1,BLACK);
-    // DrawCube((Vector3){0,0,0},1,1,1,RED);
     Material mat = LoadMaterialDefault();
     mat.maps[0].color = WHITE;
     mat.maps[0].texture = blockTextures.texture;

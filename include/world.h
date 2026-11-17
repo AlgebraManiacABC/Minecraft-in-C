@@ -9,6 +9,8 @@
 #include "tree.h"
 
 #define CHUNK_WIDTH (16)
+#define MIN_BUILD_HEIGHT (0)
+#define MAX_BUILD_HEIGHT (255)
 
 typedef union
 {
@@ -20,14 +22,24 @@ typedef union
     long xz;
 }   Coordinates_t;
 
+typedef enum : uint8_t
+{
+    BLOCK_AIR = 0,
+    BLOCK_STONE = 1,
+    BLOCK_DIRT = 2,
+    BLOCK_GRASS = 3,
+    BLOCK_TYPE_COUNT = 4
+
+}   BlockType_t;
+
 typedef struct BlockChunk
 {
     struct rb_node node;
     Coordinates_t coords; // Chunk coordinates (real / CHUNK_W/H)
-    int tempBlockLevel; // The height up to which to generate blocks
+    int tempSeaLevel;
+    BlockType_t blocks[CHUNK_WIDTH][CHUNK_WIDTH][MAX_BUILD_HEIGHT - MIN_BUILD_HEIGHT];
 
     Mesh * mesh;
-
 
 } BlockChunk;
 
@@ -35,10 +47,6 @@ typedef struct BlockChunk
 
 typedef struct BlockWorld
 {
-    // Info about the block world
-    int chunkHeight;
-    int chunkWidth;
-
     struct rb_tree * chunks;
 
 }   BlockWorld;

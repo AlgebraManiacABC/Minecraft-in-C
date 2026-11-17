@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 
 #include "player.h"
 #include "raylib.h"
@@ -11,6 +12,8 @@ int main(void)
     const int screenWidth = 800;
     const int screenHeight = 450;
     InitWindow(screenWidth, screenHeight, "Hello raylib!");
+
+    srand(time(NULL));
 
     DisableCursor();                // Disable cursor for camera movement
 
